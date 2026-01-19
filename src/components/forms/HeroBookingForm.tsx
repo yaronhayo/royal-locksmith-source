@@ -223,7 +223,7 @@ export function HeroBookingForm({
       )}
     >
       <div className="mb-6 text-center">
-        <h3 className="text-xl font-bold lg:text-2xl">{title}</h3>
+        <p className="text-xl font-bold lg:text-2xl" role="heading" aria-level={2}>{title}</p>
         <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
       </div>
 
@@ -290,6 +290,7 @@ export function HeroBookingForm({
           <select
             value={formData.service}
             onChange={(e) => handleChange('service', e.target.value)}
+            aria-label="Select service type"
             className={cn(
               'w-full rounded-lg border bg-background px-4 py-3 text-foreground transition-colors',
               'focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20',

@@ -199,6 +199,7 @@ export function ServiceAreaMap({
         ref={mapRef} 
         className="w-full"
         style={{ height }}
+        role="img"
         aria-label="Service area map"
       />
     </div>
