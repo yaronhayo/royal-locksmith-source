@@ -40,10 +40,10 @@ const serviceCategories = {
   <div class="hidden border-b border-border bg-muted/50 lg:block">
     <div class="container-custom flex items-center justify-end py-2 text-sm">
       <div class="flex items-center gap-6">
-        <span class="flex items-center gap-2 text-muted-foreground">
+        <a href="/locations/" class="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
           <Icon name="lucide:map-pin" class="h-4 w-4" />
           Serving {siteConfig.serviceArea.region}
-        </span>
+        </a>
         <span class="flex items-center gap-2 text-muted-foreground">
           <Icon name="lucide:clock" class="h-4 w-4" />
           {contact.hours}
