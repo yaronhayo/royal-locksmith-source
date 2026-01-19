@@ -186,11 +186,17 @@ export function ContactForm({
         );
       }
 
-      // Submit to PHP backend
+      // Submit to PHP backend with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(endpoint, {
         method: 'POST',
         body: submitData,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const result = await response.json();
 
@@ -219,7 +225,16 @@ export function ContactForm({
       sessionStorage.setItem('form_submitted', 'true');
       window.location.href = '/thank-you/?type=contact';
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
+      let errorMessage = 'An error occurred. Please try again.';
+      
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          errorMessage = 'Request timed out. Please check your internet connection and try again.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
       setErrors({ form: errorMessage });
       
       if (onError) {
