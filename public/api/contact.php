@@ -323,16 +323,36 @@ function getCompanyEmailTemplate(array $data): string
 
     return <<<HTML
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light only">
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        :root { color-scheme: light only; }
+        @media (prefers-color-scheme: dark) {
+            .email-body, .email-container, body, table, td, th, div, p, span, a, h1, h2, h3, h4 {
+                background-color: #f4f3f0 !important;
+                color: #181611 !important;
+            }
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f3f0;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f3f0; padding: 30px 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f3f0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f3f0; padding: 30px 20px;" class="email-body">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);" class="email-container">
                     <!-- Header with Gold Gradient -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #eca413 0%, #c0850f 100%); padding: 35px 30px; text-align: center;">
@@ -511,16 +531,36 @@ function getAutoresponderTemplate(array $data): string
 
     return <<<HTML
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light only">
+    <meta name="supported-color-schemes" content="light only">
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        :root { color-scheme: light only; }
+        @media (prefers-color-scheme: dark) {
+            .email-body, .email-container, body, table, td, th, div, p, span, a, h1, h2, h3, h4 {
+                background-color: #f4f3f0 !important;
+                color: #181611 !important;
+            }
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f3f0;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f3f0; padding: 30px 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f3f0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f3f0; padding: 30px 20px;" class="email-body">
         <tr>
             <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);" class="email-container">
                     <!-- Header with Gold Gradient -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #eca413 0%, #c0850f 100%); padding: 40px 30px; text-align: center;">

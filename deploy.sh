@@ -53,6 +53,7 @@ if ! command -v lftp &> /dev/null; then
 fi
 
 # Deploy using lftp mirror command
+# Note: --exclude api/.env.php preserves the secret file on server
 lftp -c "
 set ftp:ssl-allow no;
 set net:timeout 30;
@@ -60,7 +61,7 @@ set net:max-retries 3;
 open -u $FTP_USER,$FTP_PASS ftp://$FTP_HOST:${FTP_PORT:-21};
 lcd dist;
 cd $FTP_REMOTE_DIR;
-mirror --reverse --delete --verbose --parallel=5;
+mirror --reverse --delete --verbose --parallel=5 --exclude api/.env.php;
 bye
 "
 
