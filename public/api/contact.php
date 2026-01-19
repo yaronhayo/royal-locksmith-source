@@ -65,6 +65,11 @@ try {
         'fbclid' => sanitizeInput($_POST['fbclid'] ?? ''),
     ];
 
+    // Get scheduling preferences (from BookingForm)
+    $preferredDate = sanitizeInput($_POST['preferredDate'] ?? '');
+    $preferredTime = sanitizeInput($_POST['preferredTime'] ?? '');
+    $urgency = sanitizeInput($_POST['urgency'] ?? '');
+
     // Validate required fields
     $errors = [];
 
@@ -126,6 +131,11 @@ try {
         'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
         'recaptcha_score' => $recaptchaResult['score'] ?? 'N/A',
         'form_source' => $formSource,
+        'scheduling' => [
+            'preferred_date' => $preferredDate,
+            'preferred_time' => $preferredTime,
+            'urgency' => $urgency,
+        ],
         'tracking' => $trackingData,
     ];
 
@@ -380,6 +390,27 @@ function getCompanyEmailTemplate(array $data): string
                                 </tr>
                             </table>
                             
+HTML;
+
+    // Add scheduling data if available
+    if (!empty(array_filter($data['scheduling'] ?? []))) {
+        $html .= '<h3 style="color: #181611; margin: 30px 0 15px 0; font-size: 18px; font-weight: 700;">⏱️ Scheduling Preferences</h3>';
+        $html .= '<table width="100%" cellpadding="10" cellspacing="0" style="background-color: #fffbeb; border-radius: 12px; border: 1px solid #fef3c7;">';
+
+        if (!empty($data['scheduling']['preferred_date'])) {
+            $html .= "<tr><td style='width: 140px; color: #92400e; font-weight: 600;'>📅 Date</td><td style='color: #78350f; font-weight: 600;'>{$data['scheduling']['preferred_date']}</td></tr>";
+        }
+        if (!empty($data['scheduling']['preferred_time'])) {
+            $html .= "<tr><td style='width: 140px; color: #92400e; font-weight: 600;'>🕒 Time Window</td><td style='color: #78350f; font-weight: 600;'>{$data['scheduling']['preferred_time']}</td></tr>";
+        }
+        if (!empty($data['scheduling']['urgency'])) {
+            $urgencyLabel = ucfirst($data['scheduling']['urgency']);
+            $html .= "<tr><td style='width: 140px; color: #92400e; font-weight: 600;'>⚡ Urgency</td><td style='color: #78350f; font-weight: 600;'>{$urgencyLabel}</td></tr>";
+        }
+        $html .= '</table>';
+    }
+
+    $html .= <<<HTML
                             <h3 style="color: #181611; margin: 30px 0 15px 0; font-size: 18px; font-weight: 700;">💬 Customer Message</h3>
                             <div style="background: linear-gradient(135deg, #fff8eb 0%, #fbeab9 100%); padding: 20px; border-radius: 12px; border-left: 5px solid #eca413; font-size: 15px; line-height: 1.7; color: #333;">
                                 {$data['message']}
