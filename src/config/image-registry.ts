@@ -9,20 +9,20 @@
 export const serviceImages: Record<string, { hero: string; og: string }> = {
   // Main category pages
   emergency: {
-    hero: '/images/produced/service-emergency.png',
-    og: '/images/produced/service-emergency.png',
+    hero: '/images/produced/service-emergency.webp',
+    og: '/images/produced/service-emergency.webp',
   },
   residential: {
-    hero: '/images/produced/service-residential.png',
-    og: '/images/produced/service-residential.png',
+    hero: '/images/produced/service-residential.webp',
+    og: '/images/produced/service-residential.webp',
   },
   commercial: {
-    hero: '/images/produced/service-commercial.png',
-    og: '/images/produced/service-commercial.png',
+    hero: '/images/produced/service-commercial.webp',
+    og: '/images/produced/service-commercial.webp',
   },
   automotive: {
-    hero: '/images/produced/service-automotive.png',
-    og: '/images/produced/service-automotive.png',
+    hero: '/images/produced/service-automotive.webp',
+    og: '/images/produced/service-automotive.webp',
   },
 
   // Specific Sub-services (Unique Images)

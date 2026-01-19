@@ -47,6 +47,13 @@ const robotsContent = getRobotsContent(noindex, nofollow);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
+    <!-- Preconnect to external origins for performance -->
+    <link rel="preconnect" href="https://www.google.com" crossorigin />
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+    <link rel="preconnect" href="https://www.google-analytics.com" crossorigin />
+    <link rel="dns-prefetch" href="https://www.google.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    
     <!-- Google Tag Manager (only loads when GTM_ID is configured) -->
     {siteConfig.analytics.googleTagManagerId && (
     <script is:inline define:vars={{ gtmId: siteConfig.analytics.googleTagManagerId }}>
