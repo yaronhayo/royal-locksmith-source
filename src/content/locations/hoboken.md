@@ -7,6 +7,8 @@ metaDescription: "Locked out in Hoboken? We provide expert 24/7 locksmith servic
 focusKeyword: "locksmith Hoboken NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Hoboken"
+  - "locksmith near me Hoboken"
   - "Hoboken car locksmith"
   - "lock rekeying Hoboken NJ"
   - "brownstone security Washington St"

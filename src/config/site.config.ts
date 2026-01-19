@@ -203,9 +203,9 @@ export const siteConfig = {
   // SEO DEFAULTS
   // ============================================
   seo: {
-    titleTemplate: '%s | Royal Locksmith',
-    defaultTitle: '24/7 NJ Locksmith | Emergency & Home Security',
-    defaultDescription: 'Licensed 24/7 locksmith serving Northern New Jersey. Fast emergency lockouts, car key replacement, home security & commercial locks. Hudson, Bergen, Essex, Passaic & Union Counties. Free estimates!',
+    titleTemplate: '%s | Royal Locksmith NJ',
+    defaultTitle: 'Locksmith Near Me | 24/7 Emergency Service in North Bergen NJ',
+    defaultDescription: 'Locked out? Licensed 24/7 locksmith helping homeowners, car owners & businesses in Northern NJ. House lockout, car lockout, lock rekey, smart locks. Free estimates!',
     twitterHandle: '@royallocksmith',
     locale: 'en_US',
   },

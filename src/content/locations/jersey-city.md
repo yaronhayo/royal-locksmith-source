@@ -7,6 +7,8 @@ metaDescription: "Locked out in Jersey City? We provide expert 24/7 locksmith se
 focusKeyword: "locksmith Jersey City"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Jersey City"
+  - "locksmith near me Jersey City"
   - "Jersey City car locksmith"
   - "lock rekeying Jersey City Heights"
   - "high rise security Exchange Place"
