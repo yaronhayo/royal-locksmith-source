@@ -7,6 +7,8 @@ metaDescription: "Locked out in Passaic? We provide 24/7 expert locksmith servic
 focusKeyword: "locksmith Passaic NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Passaic"
+  - "locksmith near me Passaic"
   - "cerrajero Passaic NJ"
   - "Passaic car locksmith"
   - "lock rekeying Passaic NJ"

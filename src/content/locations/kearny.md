@@ -7,6 +7,8 @@ metaDescription: "Locked out in Kearny? We provide 24/7 expert locksmith service
 focusKeyword: "locksmith Kearny NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Kearny"
+  - "locksmith near me Kearny"
   - "Kearny car locksmith"
   - "lock rekeying Kearny NJ"
   - "Kearny Avenue commercial security"

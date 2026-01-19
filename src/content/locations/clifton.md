@@ -7,13 +7,13 @@ metaDescription: "Locked out in Clifton? We provide 24/7 expert locksmith servic
 focusKeyword: "locksmith Clifton NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Clifton"
+  - "locksmith near me Clifton"
   - "Clifton car locksmith"
   - "lock rekeying Clifton NJ"
   - "Main Avenue Clifton locksmith"
   - "emergency locksmith 07011"
   - "Passaic County locksmith"
-  - "Styertowne locksmith"
-  - "Clifton Commons security"
 neighborhoods:
   - "Downtown Clifton"
   - "Main Avenue"

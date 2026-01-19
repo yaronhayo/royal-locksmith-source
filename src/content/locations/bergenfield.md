@@ -7,7 +7,9 @@ metaDescription: "Locked out in Bergenfield? We provide 24/7 expert locksmith se
 focusKeyword: "locksmith Bergenfield"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
-  - "bergenfield car locksmith"
+  - "24 hour locksmith Bergenfield"
+  - "locksmith near me Bergenfield"
+  - "Bergenfield car locksmith"
   - "lock rekeying Bergenfield NJ"
   - "Washington Avenue commercial security"
   - "emergency locksmith 07621"

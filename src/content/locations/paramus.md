@@ -7,6 +7,8 @@ metaDescription: "Locked out in Paramus? We provide 24/7 expert locksmith servic
 focusKeyword: "locksmith Paramus"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Paramus"
+  - "locksmith near me Paramus"
   - "Paramus car locksmith"
   - "Garden State Plaza lockout"
   - "Paramus commercial locksmith"

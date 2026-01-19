@@ -7,6 +7,8 @@ metaDescription: "Locked out in Ridgewood? We provide 24/7 expert locksmith serv
 focusKeyword: "locksmith Ridgewood"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Ridgewood"
+  - "locksmith near me Ridgewood"
   - "Ridgewood car locksmith"
   - "lock rekeying Ridgewood NJ"
   - "Ridgewood Village security"

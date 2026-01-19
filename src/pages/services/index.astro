@@ -67,7 +67,7 @@ const serviceIcons: Record<string, string> = {
             <div class="relative aspect-[21/9] overflow-hidden bg-muted sm:aspect-[16/9] md:aspect-[21/9]">
               <img 
                 src={getServiceImage(service.slug).hero} 
-                alt={service.data.title}
+                alt={`${service.data.title} - professional locksmith service in NJ`}
                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 loading="lazy"
                 transition:name={`service-image-${service.slug}`}

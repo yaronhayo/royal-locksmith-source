@@ -7,13 +7,13 @@ metaDescription: "Locked out in Bayonne? We provide 24/7 expert locksmith servic
 focusKeyword: "locksmith Bayonne NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Bayonne"
+  - "locksmith near me Bayonne"
   - "Bayonne car locksmith"
   - "lock rekeying Bayonne NJ"
   - "Broadway Bayonne locksmith"
   - "emergency locksmith 07002"
   - "Hudson County locksmith"
-  - "Bayonne waterfront locksmith"
-  - "Bergen Point locksmith"
 neighborhoods:
   - "Downtown Bayonne"
   - "Broadway"

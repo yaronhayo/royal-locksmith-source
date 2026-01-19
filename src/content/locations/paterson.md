@@ -7,6 +7,8 @@ metaDescription: "Locked out in Paterson? We provide 24/7 expert locksmith servi
 focusKeyword: "locksmith Paterson NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Paterson"
+  - "locksmith near me Paterson"
   - "cerrajero Paterson NJ"
   - "Paterson car locksmith"
   - "lock rekeying Paterson NJ"

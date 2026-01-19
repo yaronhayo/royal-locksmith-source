@@ -7,6 +7,8 @@ metaDescription: "Locked out in Livingston? We provide 24/7 expert locksmith ser
 focusKeyword: "locksmith Livingston NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Livingston"
+  - "locksmith near me Livingston"
   - "Livingston car locksmith"
   - "lock rekeying Livingston NJ"
   - "Livingston Mall lockout"

@@ -7,13 +7,13 @@ metaDescription: "Locked out in Hackensack? We provide 24/7 expert locksmith ser
 focusKeyword: "locksmith Hackensack NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Hackensack"
+  - "locksmith near me Hackensack"
   - "Hackensack car locksmith"
   - "lock rekeying Hackensack NJ"
   - "Main Street commercial security"
   - "emergency locksmith 07601"
   - "Bergen County locksmith"
-  - "medical center locksmith Hackensack"
-  - "downtown Hackensack locksmith"
 neighborhoods:
   - "Downtown Hackensack"
   - "Main Street"

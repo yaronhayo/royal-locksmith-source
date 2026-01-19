@@ -7,6 +7,8 @@ metaDescription: "Locked out in Teaneck? We provide 24/7 expert locksmith servic
 focusKeyword: "locksmith Teaneck NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Teaneck"
+  - "locksmith near me Teaneck"
   - "Teaneck car locksmith"
   - "lock rekeying Teaneck NJ"
   - "Cedar Lane commercial security"

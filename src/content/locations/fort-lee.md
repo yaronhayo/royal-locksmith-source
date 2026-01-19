@@ -7,13 +7,13 @@ metaDescription: "Locked out in Fort Lee? We provide 24/7 expert locksmith servi
 focusKeyword: "locksmith Fort Lee NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Fort Lee"
+  - "locksmith near me Fort Lee"
   - "Fort Lee car locksmith"
   - "lock rekeying Fort Lee NJ"
   - "high-rise locksmith Fort Lee"
   - "emergency locksmith 07024"
   - "Bergen County locksmith"
-  - "Palisades Park locksmith"
-  - "GWB Plaza locksmith"
 neighborhoods:
   - "Downtown Fort Lee"
   - "Palisade Avenue"

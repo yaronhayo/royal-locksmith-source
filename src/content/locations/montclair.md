@@ -7,6 +7,8 @@ metaDescription: "Locked out in Montclair? We provide 24/7 expert locksmith serv
 focusKeyword: "locksmith Montclair NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Montclair"
+  - "locksmith near me Montclair"
   - "Montclair car locksmith"
   - "lock rekeying Montclair NJ"
   - "Bloomfield Avenue Montclair locksmith"

@@ -7,13 +7,14 @@ metaDescription: "Locked out in Union City? We provide 24/7 expert locksmith ser
 focusKeyword: "locksmith Union City NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Union City"
+  - "locksmith near me Union City"
   - "cerrajero Union City NJ"
   - "Union City car locksmith"
   - "lock rekeying Union City"
   - "Bergenline Avenue locksmith"
   - "emergency locksmith 07087"
   - "Hudson County locksmith"
-  - "24 hour locksmith Union City"
 neighborhoods:
   - "Bergenline Avenue"
   - "Transfer Station"

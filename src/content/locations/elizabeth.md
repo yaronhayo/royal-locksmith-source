@@ -7,13 +7,13 @@ metaDescription: "Locked out in Elizabeth? We provide 24/7 expert locksmith serv
 focusKeyword: "locksmith Elizabeth NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Elizabeth"
+  - "locksmith near me Elizabeth"
   - "Elizabeth car locksmith"
   - "cerrajero Elizabeth NJ"
   - "lock rekeying Elizabeth NJ"
   - "emergency locksmith 07201"
   - "Union County locksmith"
-  - "Newark Airport locksmith"
-  - "Elizabeth seaport locksmith"
 neighborhoods:
   - "Downtown Elizabeth"
   - "Elmora"

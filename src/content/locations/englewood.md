@@ -7,6 +7,8 @@ metaDescription: "Locked out in Englewood? We provide 24/7 expert locksmith serv
 focusKeyword: "locksmith Englewood NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Englewood"
+  - "locksmith near me Englewood"
   - "Englewood car locksmith"
   - "lock rekeying Englewood NJ"
   - "Palisade Avenue Englewood locksmith"

@@ -7,6 +7,8 @@ metaDescription: "Locked out in Bloomfield? We provide 24/7 expert locksmith ser
 focusKeyword: "locksmith Bloomfield NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith Bloomfield"
+  - "locksmith near me Bloomfield"
   - "Bloomfield car locksmith"
   - "lock rekeying Bloomfield NJ"
   - "Bloomfield Avenue locksmith"

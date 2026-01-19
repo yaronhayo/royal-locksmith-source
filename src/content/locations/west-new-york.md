@@ -7,13 +7,14 @@ metaDescription: "Locked out in West New York? We provide 24/7 expert locksmith 
 focusKeyword: "locksmith West New York NJ"
 image: "/images/locations/generic-hero.webp"
 secondaryKeywords:
+  - "24 hour locksmith West New York"
+  - "locksmith near me West New York"
   - "cerrajero West New York NJ"
   - "West New York car locksmith"
   - "lock rekeying West New York"
   - "Boulevard East locksmith"
   - "emergency locksmith 07093"
   - "Hudson County locksmith"
-  - "Bergenline WNY locksmith"
 neighborhoods:
   - "Bergenline Avenue"
   - "Boulevard East"
