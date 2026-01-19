@@ -1,0 +1,497 @@
+---
+/**
+ * Blog Post Page - Content-Rich Article Template
+ *
+ * Comprehensive, SEO-optimized blog post with:
+ * - Hero section with featured image
+ * - Author info and publish date
+ * - Table of contents
+ * - Rich content with images
+ * - Related posts
+ * - Social sharing
+ * - Newsletter signup
+ * - Sticky sidebar with CTAs
+ * - Article schema for rich results
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/common/Header.astro';
+import Footer from '../../components/common/Footer.astro';
+import Schema from '../../components/common/Schema.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import { Section, Badge, BlogCard } from '../../components/ui';
+// StickySidebar available for future use
+// import { StickySidebar } from '../../components/widgets/StickySidebar';
+import { ScrollToTop } from '../../components/common/ScrollToTop';
+import { PhoneCTA } from '../../components/widgets/PhoneCTA';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../../config/site.config';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+
+// Get related posts (same category or tags)
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const relatedPosts = allPosts
+  .filter(
+    (p) =>
+      p.slug !== post.slug &&
+      (p.data.category === post.data.category ||
+        p.data.tags?.some((tag) => post.data.tags?.includes(tag)))
+  )
+  .slice(0, 3);
+
+// If not enough related posts, fill with recent posts
+const recentPosts =
+  relatedPosts.length < 3
+    ? allPosts
+        .filter((p) => p.slug !== post.slug && !relatedPosts.includes(p))
+        .slice(0, 3 - relatedPosts.length)
+    : [];
+const displayedRelatedPosts = [...relatedPosts, ...recentPosts];
+
+// Article schema
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  image: post.data.image
+    ? `${siteConfig.url}${post.data.image}`
+    : `${siteConfig.url}${siteConfig.ogImage}`,
+  datePublished: new Date(post.data.publishedAt).toISOString(),
+  dateModified: post.data.updatedAt
+    ? new Date(post.data.updatedAt).toISOString()
+    : new Date(post.data.publishedAt).toISOString(),
+  author: {
+    '@type': 'Organization',
+    '@id': `${siteConfig.url}/#organization`,
+    name: post.data.author || siteConfig.name,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: siteConfig.name,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${siteConfig.url}/logo.png`,
+    },
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': `${siteConfig.url}/blog/${post.slug}/`,
+  },
+};
+
+const schemas = [articleSchema];
+
+const breadcrumbItems = [
+  { label: 'Blog', href: '/blog/' },
+  { label: post.data.title, href: `/blog/${post.slug}/` },
+];
+
+// Format date
+const publishDate = new Date(post.data.publishedAt).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+// Estimated read time (rough calculation)
+const wordCount = post.body?.split(/\s+/).length || 0;
+const readTime = Math.max(1, Math.ceil(wordCount / 200));
+
+// Table of contents from headings
+const toc = headings.filter((h) => h.depth <= 3);
+---
+
+<BaseLayout
+  title={post.data.metaTitle || post.data.title}
+  description={post.data.metaDescription || post.data.description}
+  ogImage={post.data.image}
+  ogType="article"
+>
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- ============================================ -->
+  <!-- HERO SECTION with Featured Image -->
+  <!-- ============================================ -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-12 lg:py-16">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="mx-auto max-w-4xl">
+        <!-- Category Badge -->
+        {
+          post.data.category && (
+            <Badge client:load variant="primary" size="lg" className="mb-4">
+              {post.data.category}
+            </Badge>
+          )
+        }
+
+        <!-- Title -->
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          {post.data.title}
+        </h1>
+
+        <!-- Description -->
+        <p class="mt-6 text-lg text-muted-foreground lg:text-xl">
+          {post.data.description}
+        </p>
+
+        <!-- Meta Info -->
+        <div class="mt-8 flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+          <!-- Author -->
+          <div class="flex items-center gap-3">
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary"
+            >
+              {(post.data.author || siteConfig.name).charAt(0)}
+            </div>
+            <div>
+              <div class="font-medium text-foreground">{post.data.author || siteConfig.name}</div>
+              <div class="text-xs">Author</div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="h-8 w-px bg-border"></div>
+
+          <!-- Date -->
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:calendar" class="h-4 w-4" />
+            <span>{publishDate}</span>
+          </div>
+
+          <!-- Read Time -->
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:clock" class="h-4 w-4" />
+            <span>{readTime} min read</span>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        {
+          post.data.tags && post.data.tags.length > 0 && (
+            <div class="mt-6 flex flex-wrap gap-2">
+              {post.data.tags.map((tag: string) => (
+                <span class="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FEATURED IMAGE -->
+  <!-- ============================================ -->
+  {
+    post.data.image && (
+      <section class="container-custom -mt-4 mb-8 lg:-mt-8 lg:mb-12">
+        <div class="mx-auto max-w-5xl">
+          <div class="aspect-[21/9] overflow-hidden rounded-2xl shadow-2xl lg:rounded-3xl">
+            <img
+              src={post.data.image}
+              alt={post.data.title}
+              class="h-full w-full object-cover"
+              loading="eager"
+            />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ============================================ -->
+  <!-- MAIN CONTENT (Full Width) -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="default">
+    <article class="mx-auto max-w-4xl">
+      <!-- Mobile TOC -->
+      {
+        toc.length > 2 && (
+          <div class="mb-10 rounded-2xl border border-border bg-muted/30 p-5">
+            <details class="group">
+              <summary class="flex cursor-pointer items-center justify-between font-bold text-foreground">
+                <span class="flex items-center gap-2">
+                  <Icon name="lucide:list" class="h-[18px] w-[18px] text-primary" />
+                  Table of Contents
+                </span>
+                <Icon
+                  name="lucide:chevron-down"
+                  class="h-[18px] w-[18px] transition-transform group-open:rotate-180"
+                />
+              </summary>
+              <nav class="mt-4 grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
+                {toc.map((heading) => (
+                  <a
+                    href={`#${heading.slug}`}
+                    class:list={[
+                      'block rounded-lg px-3 py-2 text-sm transition-colors hover:bg-primary/5 hover:text-primary',
+                      heading.depth === 2 ? 'font-semibold' : 'pl-6 text-muted-foreground',
+                    ]}
+                  >
+                    {heading.text}
+                  </a>
+                ))}
+              </nav>
+            </details>
+          </div>
+        )
+      }
+
+      <!-- Article Content -->
+      <div class="prose-custom prose-lg max-w-none prose-headings:scroll-mt-24">
+        <Content />
+      </div>
+
+      <!-- Social Share -->
+      <div
+        class="mt-12 flex flex-wrap items-center justify-center gap-4 border-y border-border py-6"
+      >
+        <span class="text-sm font-medium text-muted-foreground">Share this article:</span>
+        <div class="flex gap-2">
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.data.title)}&url=${encodeURIComponent(`${siteConfig.url}/blog/${post.slug}/`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition-all hover:border-primary hover:text-primary hover:shadow-lg"
+            aria-label="Share on Twitter"
+          >
+            <Icon name="lucide:twitter" class="h-[18px] w-[18px]" />
+          </a>
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`${siteConfig.url}/blog/${post.slug}/`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition-all hover:border-primary hover:text-primary hover:shadow-lg"
+            aria-label="Share on Facebook"
+          >
+            <Icon name="lucide:facebook" class="h-[18px] w-[18px]" />
+          </a>
+          <a
+            href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(`${siteConfig.url}/blog/${post.slug}/`)}&title=${encodeURIComponent(post.data.title)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card transition-all hover:border-primary hover:text-primary hover:shadow-lg"
+            aria-label="Share on LinkedIn"
+          >
+            <Icon name="lucide:linkedin" class="h-[18px] w-[18px]" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      {
+        post.data.tags && post.data.tags.length > 0 && (
+          <div class="mt-8">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-sm font-medium text-muted-foreground">Tagged:</span>
+              {post.data.tags.map((tag: string) => (
+                <span class="rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium transition-all hover:border-primary hover:text-primary">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      <!-- Author Bio -->
+      <div
+        class="mt-12 rounded-3xl border border-border bg-gradient-to-br from-primary/5 to-accent/5 p-8"
+      >
+        <div
+          class="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left"
+        >
+          <div
+            class="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-primary text-3xl font-bold text-primary-foreground shadow-lg"
+          >
+            {(post.data.author || siteConfig.name).charAt(0)}
+          </div>
+          <div>
+            <h3 class="font-display text-xl font-bold text-foreground">
+              {post.data.author || siteConfig.name}
+            </h3>
+            <p class="mt-3 text-base leading-relaxed text-muted-foreground">
+              Expert locksmith and security consultant with years of experience helping homeowners
+              and businesses protect what matters most. Passionate about sharing knowledge and
+              empowering readers to make informed security decisions.
+            </p>
+            <div class="mt-4 flex flex-wrap justify-center gap-4 sm:justify-start">
+              <a
+                href="/about/"
+                class="text-sm font-bold text-primary hover:text-primary/80 hover:underline"
+              >
+                Learn More About Us
+              </a>
+              <a
+                href="/contact/"
+                class="text-sm font-bold text-primary hover:text-primary/80 hover:underline"
+              >
+                Contact Author
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- RELATED POSTS -->
+  <!-- ============================================ -->
+  {
+    displayedRelatedPosts.length > 0 && (
+      <Section client:load size="lg" background="muted">
+        <div class="mx-auto max-w-3xl text-center">
+          <Badge client:load variant="secondary" className="mb-4">
+            Keep Reading
+          </Badge>
+          <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Related Articles
+          </h2>
+          <p class="mt-4 text-lg text-muted-foreground">
+            Explore more helpful articles about home security and locksmith services.
+          </p>
+        </div>
+
+        <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {displayedRelatedPosts.map((relatedPost) => (
+            <BlogCard
+              client:load
+              {...relatedPost.data}
+              slug={relatedPost.slug}
+              date={relatedPost.data.publishedAt}
+              excerpt={relatedPost.data.description}
+            />
+          ))}
+        </div>
+
+        <div class="mt-12 text-center">
+          <a
+            href="/blog/"
+            class="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-8 py-4 font-bold transition-all hover:border-primary hover:text-primary hover:shadow-glow"
+          >
+            View All Library
+            <Icon name="lucide:arrow-right" class="h-[18px] w-[18px]" />
+          </a>
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- ============================================ -->
+  <!-- NEWSLETTER / CTA -->
+  <!-- ============================================ -->
+  <Section client:load size="lg" background="default">
+    <div
+      class="relative mx-auto max-w-4xl overflow-hidden rounded-[2.5rem] border border-border bg-gradient-to-br from-primary/5 to-accent/5 p-8 text-center lg:p-16"
+    >
+      <!-- Decorative gold spark -->
+      <div class="absolute -right-12 -top-12 h-64 w-64 rounded-full bg-primary/5 blur-3xl"></div>
+
+      <div class="relative z-10">
+        <div
+          class="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-white/80 text-primary shadow-xl backdrop-blur-sm dark:bg-card/80"
+        >
+          <Icon name="lucide:mail" class="h-10 w-10" />
+        </div>
+
+        <h2 class="font-display text-3xl font-bold text-foreground sm:text-4xl">
+          Security Insights in Your Inbox
+        </h2>
+
+        <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+          Join our community for regular home security tips, industry news, and exclusive service
+          offers. No spam, only value.
+        </p>
+
+        <form class="mx-auto mt-10 flex max-w-md flex-col gap-3 sm:flex-row">
+          <input
+            type="email"
+            placeholder="Your best email"
+            class="flex-1 rounded-xl border border-border bg-card px-5 py-4 text-foreground shadow-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            required
+          />
+          <button
+            type="submit"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 font-bold text-primary-foreground shadow-xl transition-all hover:scale-105 hover:bg-primary/90 active:scale-95"
+          >
+            Join Now
+            <Icon name="lucide:arrow-right" class="h-[18px] w-[18px]" />
+          </button>
+        </form>
+
+        <p class="mt-6 text-sm text-muted-foreground">
+          Secure and private. Read our <a
+            href="/privacy/"
+            class="font-bold underline transition-colors hover:text-primary">Privacy Policy</a
+          >.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- FINAL CTA -->
+  <!-- ============================================ -->
+  <Section client:load size="lg" background="primary" className="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10">
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-4xl text-center">
+      <h2 class="font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">
+        Locked Out? We're on the Way.
+      </h2>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-primary-foreground/90 lg:text-xl">
+        Expert locksmith solutions available 24/7. Get your free over-the-phone consultation and
+        dispatch the nearest technician.
+      </p>
+
+      <div class="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
+        <a
+          href="/book/"
+          class="inline-flex items-center justify-center gap-3 rounded-xl bg-white px-10 py-5 text-lg font-bold text-primary shadow-2xl transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+        >
+          <Icon name="lucide:calendar-plus" class="h-6 w-6" />
+          Book Appointment
+        </a>
+        <a
+          href={`tel:${siteConfig.contact.phone.href}`}
+          class="inline-flex items-center justify-center gap-3 rounded-xl border-2 border-white/40 bg-white/10 px-10 py-5 text-lg font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 active:scale-95"
+        >
+          <Icon name="lucide:phone" class="h-6 w-6" />
+          {siteConfig.contact.phone.display}
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+
+  <!-- Floating Elements -->
+  <ScrollToTop client:load />
+  <PhoneCTA client:load position="bottom-left" />
+</BaseLayout>

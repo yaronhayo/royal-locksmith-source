@@ -1,0 +1,215 @@
+---
+import { siteConfig } from '../../config/site.config';
+import { Icon } from 'astro-icon/components';
+
+const currentYear = new Date().getFullYear();
+
+const socialIcons: Record<string, string> = {
+  facebook: 'lucide:facebook',
+  instagram: 'lucide:instagram',
+  twitter: 'lucide:twitter',
+  youtube: 'lucide:youtube',
+  linkedin: 'lucide:linkedin',
+  yelp: 'mdi:yelp',
+  google: 'mdi:google',
+};
+
+// Business hours data
+const businessHours = [
+  { day: 'Monday', hours: '24 Hours' },
+  { day: 'Tuesday', hours: '24 Hours' },
+  { day: 'Wednesday', hours: '24 Hours' },
+  { day: 'Thursday', hours: '24 Hours' },
+  { day: 'Friday', hours: '24 Hours' },
+  { day: 'Saturday', hours: '24 Hours' },
+  { day: 'Sunday', hours: '24 Hours' },
+];
+
+// Quick Links
+const quickLinks = [
+  { label: 'Home', href: '/', icon: 'lucide:home' },
+  { label: 'Services', href: '/services/', icon: 'lucide:wrench' },
+  { label: 'Service Areas', href: '/locations/', icon: 'lucide:map-pin' },
+  { label: 'FAQ', href: '/faq/', icon: 'lucide:help-circle' },
+  { label: 'Reviews', href: '/reviews/', icon: 'lucide:star' },
+  { label: 'Book Service', href: '/book/', icon: 'lucide:calendar' },
+  { label: 'About', href: '/about/', icon: 'lucide:users' },
+  { label: 'Blog', href: '/blog/', icon: 'lucide:file-text' },
+  { label: 'Contact', href: '/contact/', icon: 'lucide:mail' },
+];
+---
+
+<footer class="bg-secondary text-foreground dark:bg-card">
+  <!-- Main Footer -->
+  <div class="container-custom py-12 lg:py-16">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Column 1: Brand -->
+      <div>
+        <a href="/" class="inline-block" aria-label={`${siteConfig.name} - Home`}>
+          <img src="/images/logo.webp" alt={siteConfig.name} class="h-10 w-auto" />
+        </a>
+        <p class="mt-4 text-sm leading-relaxed text-muted-foreground">
+          Your trusted locksmith partner in {siteConfig.serviceArea.region}. Licensed, insured, and
+          dedicated to delivering reliable security solutions for your home and business.
+        </p>
+
+        <!-- Trust Icons Row -->
+        <div class="mt-6 flex flex-wrap gap-2">
+          <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10">
+            <Icon name="lucide:shield-check" class="h-4 w-4 text-primary" />
+          </div>
+          <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10">
+            <Icon name="lucide:award" class="h-4 w-4 text-primary" />
+          </div>
+          <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10">
+            <Icon name="lucide:badge-check" class="h-4 w-4 text-primary" />
+          </div>
+          <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10">
+            <Icon name="lucide:star" class="h-4 w-4 text-primary" />
+          </div>
+          <div class="flex h-8 w-8 items-center justify-center rounded bg-primary/10">
+            <Icon name="lucide:truck" class="h-4 w-4 text-primary" />
+          </div>
+        </div>
+
+        <!-- License Badge -->
+        <div
+          class="mt-6 inline-flex items-center gap-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2"
+        >
+          <div
+            class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-primary"
+          >
+            <Icon name="lucide:check" class="h-4 w-4 text-primary" />
+          </div>
+          <div>
+            <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              Licensed NJ Contractor
+            </div>
+            <div class="text-sm font-bold text-primary">
+              #{siteConfig.trustSignals.licenseNumber}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Quick Links -->
+      <div>
+        <h3 class="text-sm font-bold uppercase tracking-wider text-foreground">Quick Links</h3>
+        <ul class="mt-4 space-y-2.5">
+          {
+            quickLinks.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+                >
+                  <Icon name={link.icon} class="h-3.5 w-3.5 text-primary" />
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Column 3: Business Hours -->
+      <div>
+        <h3 class="text-sm font-bold uppercase tracking-wider text-foreground">We're Here 24/7</h3>
+        <ul class="mt-4 space-y-2">
+          {
+            businessHours.map((item) => (
+              <li class="flex items-center justify-between text-sm">
+                <span class="flex items-center gap-2 text-muted-foreground">
+                  <Icon name="lucide:clock" class="h-3.5 w-3.5 text-primary" />
+                  {item.day}
+                </span>
+                <span class="font-semibold text-foreground">{item.hours}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Column 4: Contact Us -->
+      <div>
+        <h3 class="text-sm font-bold uppercase tracking-wider text-foreground">Contact Us</h3>
+        <ul class="mt-4 space-y-3">
+          <li>
+            <a
+              href={`tel:${siteConfig.contact.phone.href}`}
+              class="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+            >
+              <Icon name="lucide:phone" class="h-4 w-4 text-primary" />
+              {siteConfig.contact.phone.display}
+            </a>
+          </li>
+          <li>
+            <a
+              href={`mailto:${siteConfig.contact.email}`}
+              class="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary"
+            >
+              <Icon name="lucide:mail" class="h-4 w-4 text-primary" />
+              {siteConfig.contact.email}
+            </a>
+          </li>
+          <li class="flex items-start gap-2 text-sm text-muted-foreground">
+            <Icon name="lucide:map-pin" class="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <span>
+              {siteConfig.serviceArea.primaryCity},<br />
+              {siteConfig.serviceArea.stateFullName}
+            </span>
+          </li>
+        </ul>
+
+        <!-- Social Links -->
+        <div class="mt-6 flex gap-2">
+          {
+            Object.entries(siteConfig.socials).map(
+              ([name, url]) =>
+                url &&
+                socialIcons[name] && (
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground"
+                    aria-label={`Follow us on ${name}`}
+                  >
+                    <Icon name={socialIcons[name]} class="h-5 w-5" />
+                  </a>
+                )
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Made with Love Attribution -->
+  <div class="container-custom pb-4 pt-2">
+    <p class="flex items-center justify-center gap-1 text-sm text-muted-foreground">
+      Made with <Icon name="mdi:heart" class="h-4 w-4 text-primary" /> by <a href="https://www.gettmarketing.com" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Gett Marketing</a>
+    </p>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="border-t border-border">
+    <div class="container-custom py-5">
+      <div
+        class="flex flex-col items-center justify-between gap-4 text-center text-sm sm:flex-row sm:text-left"
+      >
+        <!-- Copyright -->
+        <p class="text-muted-foreground">
+          &copy; {currentYear}
+          {siteConfig.legalName}. All rights reserved.
+        </p>
+
+        <!-- Legal Links -->
+        <div class="flex gap-4 text-muted-foreground">
+          <a href="/privacy/" class="transition-colors hover:text-primary">Privacy Policy</a>
+          <a href="/terms/" class="transition-colors hover:text-primary">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Schema from '../components/common/Schema.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { Section, Button, Card, CardContent, Badge } from '../components/ui';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+import { getPageImage } from '../config/image-registry';
+import { getLocalBusinessSchema, getOrganizationSchema } from '../utils/schema';
+
+const schemas = [getLocalBusinessSchema(), getOrganizationSchema()];
+
+const breadcrumbItems = [{ label: 'About', href: '/about/' }];
+---
+
+<BaseLayout
+  title={`Licensed NJ Locksmith Since ${new Date().getFullYear() - siteConfig.trustSignals.yearsInBusiness}`}
+  description={`Learn about ${siteConfig.name}, your trusted locksmith in ${siteConfig.serviceArea.region}. ${siteConfig.trustSignals.yearsInBusiness}+ years of experience providing professional security solutions.`}
+  ogImage={getPageImage('about').og}
+>
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+        <div>
+          <Badge client:load variant="primary" size="lg" className="mb-4">
+            About {siteConfig.name}
+          </Badge>
+
+          <h1
+            class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+          >
+            Your Trusted Security Partner Since {
+              new Date().getFullYear() - siteConfig.trustSignals.yearsInBusiness
+            }
+          </h1>
+
+          <p class="mt-6 text-lg text-muted-foreground">
+            For over {siteConfig.trustSignals.yearsInBusiness} years, {siteConfig.name} has been providing
+            professional locksmith services to homes and businesses throughout {
+              siteConfig.serviceArea.region
+            }. Our commitment to quality, integrity, and customer satisfaction has made us a trusted
+            name in security solutions.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-4">
+            <div
+              class="flex items-center gap-2 rounded-full bg-success-50 px-4 py-2 text-sm font-medium text-success-600"
+            >
+              <Icon name="lucide:shield-check" class="h-4 w-4" />
+              Licensed
+            </div>
+            <div
+              class="flex items-center gap-2 rounded-full bg-success-50 px-4 py-2 text-sm font-medium text-success-600"
+            >
+              <Icon name="lucide:badge-check" class="h-4 w-4" />
+              Insured
+            </div>
+            <div
+              class="flex items-center gap-2 rounded-full bg-success-50 px-4 py-2 text-sm font-medium text-success-600"
+            >
+              <Icon name="lucide:award" class="h-4 w-4" />
+              Bonded
+            </div>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="aspect-square overflow-hidden rounded-3xl bg-secondary">
+            <img
+              src={getPageImage('about').hero}
+              alt="Royal Locksmith professional team"
+              class="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div
+            class="absolute -bottom-6 -left-6 rounded-2xl border border-border bg-card p-6 shadow-soft-lg"
+          >
+            <div class="text-3xl font-bold text-primary">
+              {siteConfig.trustSignals.yearsInBusiness}+
+            </div>
+            <div class="text-sm text-muted-foreground">Years of Experience</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Our Story Section -->
+  <Section client:load size="lg" background="default">
+    <div class="mx-auto max-w-4xl">
+      <div class="text-center">
+        <Badge client:load variant="secondary" className="mb-4">Our Story</Badge>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          Built on Trust and Expertise
+        </h2>
+      </div>
+
+      <div class="prose-custom mt-10">
+        <p class="text-lg leading-relaxed text-muted-foreground">
+          {siteConfig.name} was founded with a simple mission: to provide honest, reliable locksmith services
+          to our community. What started as a small operation has grown into a full-service security company,
+          but our core values remain the same.
+        </p>
+        <p class="mt-6 text-lg leading-relaxed text-muted-foreground">
+          We believe that everyone deserves access to professional security solutions without the
+          stress of hidden fees or unreliable service. That's why we provide free on-site
+          inspections and detailed estimates before any work begins. Our technicians take the time
+          to explain your options and help you make informed decisions about your security needs.
+        </p>
+        <p class="mt-6 text-lg leading-relaxed text-muted-foreground">
+          Today, our team of licensed professionals serves residential, commercial, and automotive
+          clients throughout {siteConfig.serviceArea.region}. We've earned our reputation through
+          thousands of satisfied customers who trust us with their security.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Values Section -->
+  <Section client:load size="lg" background="muted">
+    <div class="text-center">
+      <Badge client:load variant="secondary" className="mb-4">Our Values</Badge>
+      <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        What Sets Us Apart
+      </h2>
+    </div>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          {
+            icon: 'lucide:shield-check',
+            title: 'Integrity',
+            description:
+              'We operate with complete transparency. No hidden fees, no surprises—just honest service you can trust.',
+          },
+          {
+            icon: 'lucide:award',
+            title: 'Expertise',
+            description:
+              'Our technicians are fully licensed, certified, and continuously trained on the latest security technologies.',
+          },
+          {
+            icon: 'lucide:heart',
+            title: 'Customer Focus',
+            description:
+              'Your satisfaction is our priority. We listen to your needs and provide solutions that work for you.',
+          },
+          {
+            icon: 'lucide:zap',
+            title: 'Reliability',
+            description:
+              "When you need us, we're there. Our team is committed to providing dependable service every time.",
+          },
+        ].map((value) => (
+          <Card client:load variant="hover" padding="lg" className="text-center h-full">
+            <CardContent>
+              <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <Icon name={value.icon} class="h-7 w-7" />
+              </div>
+              <h3 class="text-lg font-bold transition-colors group-hover:text-primary">
+                {value.title}
+              </h3>
+              <p class="mt-2 text-sm text-muted-foreground">{value.description}</p>
+            </CardContent>
+          </Card>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Credentials Section -->
+  <Section client:load size="lg" background="default">
+    <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+      <div>
+        <Badge client:load variant="primary" className="mb-4">Credentials</Badge>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          Licensed, Insured & Certified
+        </h2>
+        <p class="mt-4 text-muted-foreground">
+          Your security is too important to trust to just anyone. That's why all our technicians are
+          fully licensed, insured, and background-checked. We maintain the highest standards of
+          professionalism and comply with all state and local regulations.
+        </p>
+
+        <div class="mt-8 space-y-4">
+          <Card client:load variant="hover" padding="none" className="overflow-hidden">
+            <div class="flex items-center gap-4 p-4">
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-success-50 text-success-600"
+              >
+                <Icon name="lucide:file-check" class="h-6 w-6" />
+              </div>
+              <div>
+                <div class="font-semibold">State Licensed</div>
+                <div class="text-sm text-muted-foreground">
+                  License #{siteConfig.trustSignals.licenseNumber}
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card client:load variant="hover" padding="none" className="overflow-hidden">
+            <div class="flex items-center gap-4 p-4">
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-success-50 text-success-600"
+              >
+                <Icon name="lucide:shield" class="h-6 w-6" />
+              </div>
+              <div>
+                <div class="font-semibold">Fully Insured</div>
+                <div class="text-sm text-muted-foreground">Liability & Workers' Compensation</div>
+              </div>
+            </div>
+          </Card>
+
+          <Card client:load variant="hover" padding="none" className="overflow-hidden">
+            <div class="flex items-center gap-4 p-4">
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-lg bg-success-50 text-success-600"
+              >
+                <Icon name="lucide:user-check" class="h-6 w-6" />
+              </div>
+              <div>
+                <div class="font-semibold">Background Checked</div>
+                <div class="text-sm text-muted-foreground">All Technicians Verified</div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div class="aspect-video overflow-hidden rounded-3xl border border-border bg-muted">
+          <img
+            src={getPageImage('about').hero}
+            alt="Professional locksmith tools and credentials"
+            class="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- CTA Section -->
+  <Section
+    client:load
+    size="lg"
+    background="primary"
+    className="relative overflow-hidden text-center"
+  >
+    <!-- Decorative background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10">
+    </div>
+
+    <h2 class="font-display text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl">
+      Ready to Work With Us?
+    </h2>
+    <p class="mx-auto mt-4 max-w-2xl text-lg text-primary-foreground/80">
+      Contact us today for a free consultation and estimate. Experience the {siteConfig.name} difference.
+    </p>
+    <div class="relative z-10 mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+      <Button client:load variant="secondary" size="lg" className="gap-2 shadow-xl">
+        <Icon name="lucide:phone" class="h-5 w-5" />
+        Call {siteConfig.contact.phone.display}
+      </Button>
+      <Button
+        client:load
+        variant="outline"
+        size="lg"
+        className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10"
+      >
+        <Icon name="lucide:file-text" class="h-5 w-5" />
+        Get Free Estimate
+      </Button>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

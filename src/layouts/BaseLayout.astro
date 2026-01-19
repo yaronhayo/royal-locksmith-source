@@ -1,0 +1,195 @@
+---
+import { SEO } from 'astro-seo';
+import { ClientRouter } from 'astro:transitions';
+import { siteConfig } from '../config/site.config';
+import { WebVitals } from '../components/common/WebVitals';
+import { Tracking } from '../components/common/Tracking';
+import { ExitIntentPopup } from '../components/widgets/ExitIntentPopup';
+import { getPageTitle, getCanonicalUrl, getOgImageUrl, getRobotsContent } from '../utils/seo';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/outfit/500.css';
+import '@fontsource/outfit/600.css';
+import '@fontsource/outfit/700.css';
+import '../assets/styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  canonical?: string;
+  noindex?: boolean;
+  nofollow?: boolean;
+}
+
+const {
+  title,
+  description = siteConfig.seo.defaultDescription,
+  ogImage,
+  ogType = 'website',
+  canonical,
+  noindex = false,
+  nofollow = false,
+} = Astro.props;
+
+const pageTitle = getPageTitle(title);
+const canonicalUrl = canonical || getCanonicalUrl(Astro.url.pathname);
+const ogImageUrl = getOgImageUrl(ogImage);
+const robotsContent = getRobotsContent(noindex, nofollow);
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Google Tag Manager (only loads when GTM_ID is configured) -->
+    {siteConfig.analytics.googleTagManagerId && (
+    <script is:inline define:vars={{ gtmId: siteConfig.analytics.googleTagManagerId }}>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer', gtmId);
+    </script>
+    )}
+    <!-- End Google Tag Manager -->
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png?v=2" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=2" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
+    <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Generator -->
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO -->
+    <SEO
+      title={pageTitle}
+      description={description}
+      canonical={canonicalUrl}
+      openGraph={{
+        basic: {
+          title: pageTitle,
+          type: ogType,
+          image: ogImageUrl,
+          url: canonicalUrl,
+        },
+        optional: {
+          description: description,
+          siteName: siteConfig.name,
+          locale: siteConfig.seo.locale,
+        },
+        image: {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: pageTitle,
+          type: 'image/png',
+        },
+      }}
+      twitter={{
+        card: 'summary_large_image',
+        site: siteConfig.seo.twitterHandle,
+        creator: siteConfig.seo.twitterHandle,
+        title: pageTitle,
+        description: description,
+        image: ogImageUrl,
+      }}
+      extend={{
+        meta: [
+          { name: 'robots', content: robotsContent },
+          { name: 'googlebot', content: robotsContent },
+          { name: 'theme-color', content: '#eca413' },
+          { name: 'msapplication-TileColor', content: '#181611' },
+          { name: 'format-detection', content: 'telephone=yes' },
+          { name: 'geo.region', content: `US-${siteConfig.serviceArea.state}` },
+          { name: 'geo.placename', content: siteConfig.serviceArea.primaryCity },
+        ],
+        link: [
+          { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+          { rel: 'dns-prefetch', href: 'https://www.googletagmanager.com' },
+        ],
+      }}
+    />
+    
+    <!-- View Transitions -->
+    <ClientRouter />
+    
+    <!-- Schema Markup Slot -->
+    <slot name="head" />
+    
+    <!-- Theme Script (Prevents Flash - Runs Before Render) -->
+    <script is:inline>
+      (function() {
+        const getTheme = () => {
+          if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+            return localStorage.getItem('theme');
+          }
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+        
+        const theme = getTheme();
+        const root = document.documentElement;
+        
+        // Apply theme classes
+        if (theme === 'dark') {
+          root.classList.add('dark');
+          root.classList.remove('light');
+        } else {
+          root.classList.remove('dark');
+          root.classList.add('light');
+        }
+      })();
+    </script>
+  </head>
+  
+  <body class="min-h-screen bg-background font-sans antialiased">
+    <!-- Google Tag Manager (noscript) - only loads when GTM_ID is configured -->
+    {siteConfig.analytics.googleTagManagerId && (
+    <noscript>
+      <iframe src={`https://www.googletagmanager.com/ns.html?id=${siteConfig.analytics.googleTagManagerId}`}
+        height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    )}
+    <!-- End Google Tag Manager (noscript) -->
+    
+    <!-- Skip to Content Link (Accessibility) -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+    >
+      Skip to main content
+    </a>
+    
+    <!-- Header Slot -->
+    <slot name="header" />
+    
+    <!-- Main Content -->
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    
+    <!-- Footer Slot -->
+    <slot name="footer" />
+    
+    <!-- Exit Intent Popup (Lead Capture) -->
+    <ExitIntentPopup 
+      client:idle
+      phone={siteConfig.contact.phone.display}
+      phoneHref={siteConfig.contact.phone.href}
+      bookingUrl="/book/"
+    />
+    
+    <!-- Web Vitals Tracking (Core Web Vitals for SEO) -->
+    <WebVitals client:idle debug={import.meta.env.DEV} />
+    
+    <!-- Marketing Parameter Tracking -->
+    <Tracking client:load />
+  </body>
+</html>

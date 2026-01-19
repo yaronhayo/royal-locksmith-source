@@ -1,0 +1,58 @@
+---
+import { Icon } from 'astro-icon/components';
+import { getBreadcrumbSchema } from '../../utils/schema';
+import Schema from './Schema.astro';
+import type { BreadcrumbItem } from '../../types';
+
+interface Props {
+  items: BreadcrumbItem[];
+  className?: string;
+}
+
+const { items, className = '' } = Astro.props;
+
+// Add Home as the first item if not present
+const breadcrumbs: BreadcrumbItem[] = [
+  { label: 'Home', href: '/' },
+  ...items.filter((item) => item.href !== '/'),
+];
+
+const breadcrumbSchema = getBreadcrumbSchema(breadcrumbs);
+---
+
+<Schema schema={breadcrumbSchema} />
+
+<nav aria-label="Breadcrumb" class={`text-sm ${className}`}>
+  <ol class="flex flex-wrap items-center gap-1.5" itemscope itemtype="https://schema.org/BreadcrumbList">
+    {breadcrumbs.map((item, index) => (
+      <li
+        class="flex items-center gap-1.5"
+        itemprop="itemListElement"
+        itemscope
+        itemtype="https://schema.org/ListItem"
+      >
+        {index > 0 && (
+          <Icon name="lucide:chevron-right" class="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+        )}
+        {index === breadcrumbs.length - 1 ? (
+          <span
+            class="font-medium text-foreground"
+            itemprop="name"
+            aria-current="page"
+          >
+            {item.label}
+          </span>
+        ) : (
+          <a
+            href={item.href}
+            class="text-muted-foreground transition-colors hover:text-foreground"
+            itemprop="item"
+          >
+            <span itemprop="name">{item.label}</span>
+          </a>
+        )}
+        <meta itemprop="position" content={String(index + 1)} />
+      </li>
+    ))}
+  </ol>
+</nav>

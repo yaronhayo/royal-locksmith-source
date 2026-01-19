@@ -1,0 +1,72 @@
+---
+/**
+ * Theme Toggle Component
+ * 
+ * Allows users to switch between light and dark themes.
+ * Respects system preference by default, saves user choice to localStorage.
+ */
+import { Icon } from 'astro-icon/components';
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  class="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+  aria-label="Toggle theme"
+>
+  <!-- Sun icon (shown in dark mode) -->
+  <Icon name="lucide:sun" class="h-5 w-5 dark:hidden" id="sun-icon" />
+  <!-- Moon icon (shown in light mode) -->
+  <Icon name="lucide:moon" class="hidden h-5 w-5 dark:block" id="moon-icon" />
+</button>
+
+<script>
+  function initThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+
+    function getTheme(): 'light' | 'dark' {
+      if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+        return localStorage.getItem('theme') as 'light' | 'dark';
+      }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function setTheme(theme: 'light' | 'dark') {
+      const root = document.documentElement;
+      
+      if (theme === 'dark') {
+        root.classList.add('dark');
+        root.classList.remove('light');
+      } else {
+        root.classList.remove('dark');
+        root.classList.add('light');
+      }
+      
+      localStorage.setItem('theme', theme);
+    }
+
+    // Apply current theme
+    setTheme(getTheme());
+
+    // Toggle on click
+    toggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  }
+
+  // Initialize on page load
+  initThemeToggle();
+
+  // Re-initialize after view transitions (Astro)
+  document.addEventListener('astro:after-swap', initThemeToggle);
+</script>

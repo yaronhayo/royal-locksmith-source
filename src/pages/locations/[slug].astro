@@ -1,0 +1,660 @@
+---
+/**
+ * Service Area Detail Page - Content-Rich Local SEO Template
+ * 
+ * Comprehensive, consumer-centric location page with:
+ * - Hero section with local focus and booking form
+ * - Local service overview with area-specific content
+ * - Services available in this area
+ * - Neighborhoods/areas served
+ * - Local landmarks and context
+ * - Why choose us for this area
+ * - Local testimonials
+ * - FAQ specific to location
+ * - Service area map
+ * - Multiple CTAs throughout
+ * - Sticky sidebar with conversion elements
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/common/Header.astro';
+import Footer from '../../components/common/Footer.astro';
+import Schema from '../../components/common/Schema.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import { Section, Badge, Card, CardContent, Accordion, ServiceCard, LocationCard } from '../../components/ui';
+import * as LucideIcons from 'lucide-react';
+import { HeroBookingForm } from '../../components/forms/HeroBookingForm';
+import { StickySidebar } from '../../components/widgets/StickySidebar';
+import { ScrollToTop } from '../../components/common/ScrollToTop';
+import { PhoneCTA } from '../../components/widgets/PhoneCTA';
+import { ReviewsCarousel } from '../../components/widgets/ReviewsCarousel';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../../config/site.config';
+import { getLocationImage } from '../../config/image-registry';
+import { getLocalBusinessSchema, getFAQSchema } from '../../utils/schema';
+
+export async function getStaticPaths() {
+  const locations = await getCollection('locations', ({ data }) => !data.draft);
+  return locations.map((location) => ({
+    params: { slug: location.slug },
+    props: { location },
+  }));
+}
+
+interface Props {
+  location: CollectionEntry<'locations'>;
+}
+
+const { location } = Astro.props;
+const { Content } = await location.render();
+
+// Get location config
+const locationConfig = siteConfig.locations.find(l => l.slug === location.slug);
+
+// Get all services
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+
+// Get testimonials (filter by location category, then featured, then general)
+const allTestimonials = await getCollection('testimonials');
+const locationTestimonials = [
+  // First: testimonials specifically for this location
+  ...allTestimonials.filter(t => t.data.category === location.slug),
+  // Second: testimonials mentioning this location
+  ...allTestimonials.filter(t => 
+    t.data.location?.toLowerCase().includes(location.data.name.toLowerCase()) &&
+    t.data.category !== location.slug
+  ),
+  // Third: featured testimonials as backup
+  ...allTestimonials.filter(t => t.data.featured && t.data.category !== location.slug),
+  // Fourth: general testimonials to fill to 12
+  ...allTestimonials.filter(t => !t.data.category && !t.data.featured),
+].slice(0, 12).map(t => t.data);
+
+// Get other locations
+const allLocations = await getCollection('locations', ({ data }) => !data.draft);
+const otherLocations = allLocations.filter(l => l.slug !== location.slug).slice(0, 4);
+
+// Location-specific FAQ
+const locationFAQ = location.data.faqs || [
+  {
+    question: `Do you provide locksmith services in ${location.data.name}?`,
+    answer: `Yes! ${siteConfig.name} proudly serves ${location.data.name} and surrounding areas. Our licensed technicians are familiar with the local area and provide comprehensive locksmith services to residents and businesses throughout ${location.data.name}.`,
+  },
+  {
+    question: `What areas of ${location.data.name} do you cover?`,
+    answer: `We serve all neighborhoods and areas within ${location.data.name}, including ${location.data.neighborhoods?.slice(0, 5).join(', ') || 'all major neighborhoods'}. If you're unsure whether we service your specific location, please contact us and we'll be happy to confirm.`,
+  },
+  {
+    question: 'What types of locksmith services do you offer?',
+    answer: `We offer a full range of locksmith services in ${location.data.name}, including residential lock installation and repair, commercial security solutions, automotive locksmith services, and emergency lockout assistance. Our technicians are equipped to handle all your security needs.`,
+  },
+  {
+    question: 'Do you provide free estimates?',
+    answer: `Yes, we provide free on-site estimates for all our services in ${location.data.name}. Our technician will assess your needs, explain your options, and provide a detailed quote before any work begins. There's no obligation to proceed.`,
+  },
+  {
+    question: 'Are your technicians licensed to work in this area?',
+    answer: `Absolutely. All our technicians are fully licensed (License #${siteConfig.trustSignals.licenseNumber}), insured, and authorized to provide locksmith services in ${location.data.name} and throughout ${siteConfig.serviceArea.region}. We maintain all required certifications and insurance.`,
+  },
+  {
+    question: 'How can I schedule service in my area?',
+    answer: `Scheduling service in ${location.data.name} is easy. You can call us directly at ${siteConfig.contact.phone.display}, fill out our online booking form, or use our contact form. We'll work with you to find a convenient time for your service appointment.`,
+  },
+];
+
+// Convert FAQ for Accordion component
+const faqItems = locationFAQ.map((faq: { question: string; answer: string }, index: number) => ({
+  id: `faq-${index}`,
+  title: faq.question,
+  content: faq.answer,
+}));
+
+// Generate schemas
+const schemas = [
+  getLocalBusinessSchema(),
+  getFAQSchema(locationFAQ),
+];
+
+// Breadcrumb items
+const breadcrumbItems = [
+  { label: 'Service Areas', href: '/locations/' },
+  { label: location.data.name, href: `/locations/${location.slug}/` },
+];
+
+// Service icons mapping
+const serviceIcons: Record<string, string> = {
+  residential: 'lucide:home',
+  commercial: 'lucide:building-2',
+  automotive: 'lucide:car',
+  emergency: 'lucide:alert-triangle',
+};
+
+// Local benefits
+const localBenefits = [
+  {
+    title: 'Local Expertise',
+    description: `Our technicians know ${location.data.name} inside and out, ensuring efficient service and familiarity with local security needs.`,
+    icon: 'lucide:map-pin',
+  },
+  {
+    title: 'Community Trusted',
+    description: `We've built our reputation serving ${location.data.name} residents and businesses with integrity and professionalism.`,
+    icon: 'lucide:users',
+  },
+  {
+    title: 'Convenient Scheduling',
+    description: 'We work around your schedule to provide service at a time that\'s convenient for you.',
+    icon: 'lucide:calendar',
+  },
+  {
+    title: 'Licensed & Insured',
+    description: `Fully licensed and insured to provide locksmith services in ${location.data.name} and ${siteConfig.serviceArea.region}.`,
+    icon: 'lucide:shield-check',
+  },
+  {
+    title: 'Free Estimates',
+    description: 'No-obligation estimates so you can make informed decisions about your security needs.',
+    icon: 'lucide:file-text',
+  },
+  {
+    title: 'Quality Guaranteed',
+    description: 'We stand behind our work with a satisfaction guarantee on all services.',
+    icon: 'lucide:award',
+  },
+];
+---
+
+<BaseLayout
+  title={location.data.metaTitle || `Locksmith Services in ${location.data.name}, ${siteConfig.serviceArea.state}`}
+  description={location.data.metaDescription || location.data.description || `Professional locksmith services in ${location.data.name}, ${siteConfig.serviceArea.state}. Residential, commercial, and automotive locksmith solutions. Licensed, insured, and trusted. Free estimates.`}
+  ogImage={getLocationImage(location.slug).og}
+>
+  <Schema slot="head" schema={schemas} />
+  {/* Geo Meta Tags for Local SEO */}
+  {locationConfig && (
+    <Fragment slot="head">
+      <meta name="geo.region" content="US-NJ" />
+      <meta name="geo.placename" content={`${location.data.name}, NJ`} />
+      <meta name="geo.position" content={`${locationConfig.coordinates.lat};${locationConfig.coordinates.lng}`} />
+      <meta name="ICBM" content={`${locationConfig.coordinates.lat}, ${locationConfig.coordinates.lng}`} />
+    </Fragment>
+  )}
+  <Header slot="header" />
+
+  <!-- ============================================ -->
+  <!-- HERO SECTION with Local Focus -->
+  <!-- ============================================ -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    <!-- Decorative gold spark -->
+    <div class="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
+    
+    <div class="container-custom relative py-12 lg:py-20">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+      
+      <div class="grid items-start gap-12 lg:grid-cols-5 lg:gap-16">
+        <!-- Left: Content (3 cols) -->
+        <div class="lg:col-span-3">
+          <Badge client:load variant="primary" size="lg" className="mb-6">
+            <LucideIcons.Zap size={16} className="mr-2" />
+            Fast Response in {location.data.name}
+          </Badge>
+          
+          <h1 class="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            Locked Out in {location.data.name}?
+            <span class="text-primary"> We're On Our Way.</span>
+          </h1>
+          
+          <p class="mt-8 text-xl text-muted-foreground leading-relaxed">
+            <strong>Don't stay stranded.</strong> Our mobile technicians serve {location.data.name} around the clock—car lockouts, home emergencies, and business security needs. <strong>Upfront pricing. No hidden fees.</strong>
+          </p>
+          
+          <!-- Local Trust Signals -->
+          <div class="mt-10 grid gap-6 sm:grid-cols-2">
+            <div class="flex items-center gap-4 rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-soft">
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <LucideIcons.MapPin size={28} />
+              </div>
+              <div>
+                <div class="font-display text-lg font-bold">Local Service</div>
+                <div class="text-sm text-muted-foreground">Serving {location.data.name} & Area</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 rounded-2xl border border-border bg-card/50 p-5 backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-soft">
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <LucideIcons.ShieldCheck size={28} />
+              </div>
+              <div>
+                <div class="font-display text-lg font-bold">Licensed & Insured</div>
+                <div class="text-sm text-muted-foreground">Lic# {siteConfig.trustSignals.licenseNumber}</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Quick Service List -->
+          <div class="mt-10">
+            <p class="mb-4 text-sm font-bold uppercase tracking-widest text-muted-foreground/80">Available in {location.data.name}:</p>
+            <div class="flex flex-wrap gap-2">
+              {siteConfig.services.map((service) => (
+                <a 
+                  href={`/services/${service.slug}/`}
+                  class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium transition-all hover:border-primary hover:text-primary hover:bg-primary/5 hover:shadow-glow"
+                >
+                  <Icon name={`lucide:${service.icon}`} class="h-4 w-4" />
+                  {service.name}
+                </a>
+              ))}
+            </div>
+          </div>
+          
+          <!-- Phone CTA (visible on mobile) -->
+          <div class="mt-10 lg:hidden">
+            <a
+              href={`tel:${siteConfig.contact.phone.href}`}
+              class="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-primary px-8 py-5 text-lg font-bold text-primary-foreground shadow-2xl transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
+            >
+              <LucideIcons.Phone size={24} />
+              Call {siteConfig.contact.phone.display}
+            </a>
+          </div>
+        </div>
+        
+        <!-- Right: Booking Form (2 cols) -->
+        <div class="lg:col-span-2">
+          <div class="sticky top-24">
+            <HeroBookingForm 
+              client:load
+              recaptchaSiteKey={siteConfig.apiKeys.recaptchaSiteKey}
+              defaultLocation={location.data.name}
+              title={`Get Service in ${location.data.name}`}
+              subtitle="Free estimate • No obligation"
+              compact={true}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- ABOUT SERVICES IN THIS AREA -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="default">
+    <div class="grid items-center gap-16 lg:grid-cols-2">
+      <!-- Content -->
+      <div>
+        <Badge client:load variant="secondary" className="mb-4">Regional Expertise</Badge>
+        <h2 class="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          Your Trusted Locksmith in {location.data.name}
+        </h2>
+        
+        <div class="prose-custom mt-8">
+          <Content />
+        </div>
+        
+        <p class="mt-8 text-lg text-muted-foreground leading-relaxed">
+          Whether you need residential lock services, commercial security solutions, or automotive locksmith assistance, our team is equipped to handle all your needs in {location.data.name}. We take pride in serving our local community with professionalism, integrity, and expertise.
+        </p>
+        
+        <div class="mt-10 flex flex-wrap gap-5">
+          <a
+            href="/book/"
+            class="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 font-bold text-primary-foreground shadow-xl transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
+          >
+            <LucideIcons.CalendarPlus size={20} />
+            Schedule Service
+          </a>
+          <a
+            href="/services/"
+            class="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-8 py-4 font-bold transition-all hover:border-primary hover:text-primary hover:shadow-glow"
+          >
+            View All Services
+            <LucideIcons.ArrowRight size={20} />
+          </a>
+        </div>
+      </div>
+      
+      <!-- Map/Image -->
+      <div class="relative">
+        <div class="aspect-[4/3] overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary/10 to-accent/10 border border-border shadow-2xl">
+          <img 
+            src={getLocationImage(location.slug).hero} 
+            alt={`Locksmith services in ${location.data.name}`}
+            class="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
+            loading="lazy"
+          />
+        </div>
+        
+        <!-- Floating Badge -->
+        <Card client:load padding="lg" variant="default" className="absolute -bottom-6 -left-6 shadow-2xl lg:-left-12 border-primary/20">
+          <div class="flex items-center gap-4">
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-glow">
+              <LucideIcons.MapPin size={28} />
+            </div>
+            <div>
+              <div class="font-display text-xl font-bold">{location.data.name}</div>
+              <div class="text-sm font-medium text-muted-foreground">{siteConfig.serviceArea.state} Coverage</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- SERVICES AVAILABLE IN THIS AREA -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="muted">
+    <div class="mx-auto max-w-3xl text-center">
+      <Badge client:load variant="secondary" className="mb-4">Our Services</Badge>
+      <h2 class="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        Locksmith Services in {location.data.name}
+      </h2>
+      <p class="mt-6 text-lg text-muted-foreground">
+        We offer a complete range of professional locksmith services to meet all your security needs in {location.data.name} and surrounding areas.
+      </p>
+    </div>
+    
+    <div class="mt-16 grid gap-8 sm:grid-cols-2">
+      {allServices.map((service) => (
+        <ServiceCard 
+          client:load 
+          title={service.data.title}
+          description={service.data.shortDescription || service.data.description}
+          iconName={serviceIcons[service.slug] || 'wrench'}
+          href={`/services/${service.slug}/`}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- NEIGHBORHOODS SERVED -->
+  <!-- ============================================ -->
+  {location.data.neighborhoods && location.data.neighborhoods.length > 0 && (
+    <Section client:load size="xl" background="default">
+      <div class="grid gap-16 lg:grid-cols-2">
+        <!-- Content -->
+        <div>
+          <Badge client:load variant="secondary" className="mb-4">Hyper-Local Coverage</Badge>
+          <h2 class="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            Neighborhoods in {location.data.name}
+          </h2>
+          <p class="mt-6 text-lg text-muted-foreground leading-relaxed">
+            Our locksmith services cover all neighborhoods and areas within {location.data.name}. No matter where you're located, our mobile technicians are standing by to assist.
+          </p>
+          
+          <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {location.data.neighborhoods.map((neighborhood: string) => (
+              <div class="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm font-medium transition-all hover:border-primary/40 hover:bg-primary/5 hover:translate-x-1">
+                <LucideIcons.MapPin size={16} className="text-primary shrink-0" />
+                <span class="truncate">{neighborhood}</span>
+              </div>
+            ))}
+          </div>
+          
+          <div class="mt-10 rounded-3xl border-2 border-dashed border-border p-8 text-center sm:text-left">
+            <h3 class="font-display text-xl font-bold">Don't see your neighborhood?</h3>
+            <p class="mt-3 text-muted-foreground">
+              We likely still serve your area! Our mobile units cover a 30-mile radius around {location.data.name}.
+            </p>
+            <a
+              href="/contact/"
+              class="mt-6 inline-flex items-center gap-2 font-bold text-primary hover:underline hover:text-primary/80"
+            >
+              Check Availability
+              <LucideIcons.ArrowRight size={18} />
+            </a>
+          </div>
+        </div>
+        
+        <!-- Zip Codes / Additional Info -->
+        <div class="space-y-8">
+          {location.data.zipCodes && location.data.zipCodes.length > 0 && (
+            <Card client:load padding="lg" className="border-primary/10">
+              <CardContent>
+                <div class="flex items-center gap-4 mb-6">
+                  <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <LucideIcons.Mail size={24} />
+                  </div>
+                  <h3 class="font-display text-2xl font-bold">ZIP Codes Served</h3>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                  {location.data.zipCodes.map((zip: string) => (
+                    <span class="rounded-xl bg-muted border border-border px-4 py-2 text-sm font-bold text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:border-primary">
+                      {zip}
+                    </span>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          <Card client:load padding="lg">
+            <CardContent>
+              <div class="flex items-center gap-4 mb-6">
+                <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <LucideIcons.Clock size={24} />
+                </div>
+                <h3 class="font-display text-2xl font-bold">Local Availability</h3>
+              </div>
+              <p class="text-lg font-medium text-foreground">{siteConfig.contact.hours}</p>
+              <p class="mt-3 text-muted-foreground leading-relaxed">
+                Emergency teams are dispatched 24/7 for lockouts and security breaches in {location.data.name}.
+              </p>
+            </CardContent>
+          </Card>
+          
+          <Card client:load padding="none" variant="primary" className="overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-20"></div>
+            <CardContent className="p-8 relative z-10">
+              <h3 class="font-display text-2xl font-bold">Need Immediate Help?</h3>
+              <p class="mt-3 text-primary-foreground/90">
+                Contact our local dispatch for a technician arrival time estimate.
+              </p>
+              <a
+                href={`tel:${siteConfig.contact.phone.href}`}
+                class="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-6 py-4 font-bold text-primary shadow-xl transition-all hover:bg-white/90 hover:scale-[1.02]"
+              >
+                <LucideIcons.Phone size={20} />
+                Call {siteConfig.contact.phone.display}
+              </a>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </Section>
+  )}
+
+  <!-- ============================================ -->
+  <!-- WHY CHOOSE US FOR THIS AREA -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="muted">
+    <div class="mx-auto max-w-3xl text-center">
+      <Badge client:load variant="secondary" className="mb-4">Why Choose Royal</Badge>
+      <h2 class="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        The {location.data.name} Benchmark
+      </h2>
+      <p class="mt-6 text-lg text-muted-foreground">
+        We've built our reputation in {location.data.name} through years of reliable service, honest practices, and a commitment to customer satisfaction.
+      </p>
+    </div>
+    
+    <div class="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      {localBenefits.map((benefit) => (
+        <div class="group flex flex-col items-center text-center sm:items-start sm:text-left gap-5 p-2 transition-all">
+          <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.25rem] bg-card border border-border text-primary shadow-sm transition-all group-hover:bg-primary group-hover:text-primary-foreground group-hover:border-primary group-hover:shadow-glow group-hover:-translate-y-1">
+            <Icon name={benefit.icon || 'lucide:check-circle'} class="h-8 w-8" />
+          </div>
+          <div>
+            <h3 class="font-display text-xl font-bold mb-3">{benefit.title}</h3>
+            <p class="text-muted-foreground leading-relaxed">{benefit.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- LOCAL TESTIMONIALS CAROUSEL (12 cards) -->
+  <!-- ============================================ -->
+  {locationTestimonials.length > 0 && (
+    <ReviewsCarousel 
+      client:load
+      testimonials={locationTestimonials}
+      title={`What ${location.data.name} Customers Say`}
+      subtitle={`Read what our customers in the ${location.data.name} area have to say about our professional locksmith services.`}
+      className="bg-background"
+    />
+  )}
+
+  <!-- ============================================ -->
+  <!-- FAQ SECTION -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="muted">
+    <div class="grid gap-16 lg:grid-cols-5">
+      <!-- FAQ Content -->
+      <div class="lg:col-span-3">
+        <Badge client:load variant="secondary" className="mb-4">Common Questions</Badge>
+        <h2 class="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          Service FAQ for {location.data.name}
+        </h2>
+        <p class="mt-6 text-lg text-muted-foreground leading-relaxed">
+          Have questions about our locksmith services in {location.data.name}? Find answers below or contact our regional dispatch for personalized assistance.
+        </p>
+        
+        <div class="mt-10">
+          <Accordion client:load items={faqItems} />
+        </div>
+        
+        <div class="mt-10 rounded-3xl border border-border bg-card p-8 shadow-soft relative overflow-hidden">
+          <div class="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-primary/5 blur-2xl"></div>
+          <div class="relative z-10">
+            <h3 class="font-display text-2xl font-bold">Still have questions?</h3>
+            <p class="mt-3 text-muted-foreground">
+              Our regional security consultants are available to provide expert advice tailored to your {location.data.name} property.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-4">
+              <a
+                href="/contact/"
+                class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground shadow-xl transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
+              >
+                <LucideIcons.MessageSquare size={18} />
+                Send Message
+              </a>
+              <a
+                href={`tel:${siteConfig.contact.phone.href}`}
+                class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-border bg-white/50 px-6 py-3 font-bold text-foreground transition-all hover:border-primary hover:text-primary hover:bg-primary/5"
+              >
+                <LucideIcons.Phone size={18} />
+                Call Expert
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Sidebar -->
+      <div class="lg:col-span-2">
+        <div class="sticky top-24 space-y-8">
+           <StickySidebar 
+            client:load
+            currentLocation={location.data.name}
+            showBookingCTA={true}
+            showTrustBadges={true}
+            showServiceAreas={false}
+          />
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- OTHER SERVICE AREAS -->
+  <!-- ============================================ -->
+  {otherLocations.length > 0 && (
+    <Section client:load size="lg" background="default">
+      <div class="mx-auto max-w-3xl text-center">
+        <Badge client:load variant="secondary" className="mb-4">Network Growth</Badge>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          We Also Serve These Nearby Communities
+        </h2>
+        <p class="mt-6 text-lg text-muted-foreground">
+          In addition to {location.data.name}, we provide locksmith services throughout {siteConfig.serviceArea.region}.
+        </p>
+      </div>
+      
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {otherLocations.map((otherLocation) => (
+          <LocationCard 
+            client:load 
+            {...otherLocation.data} 
+            slug={otherLocation.slug}
+          />
+        ))}
+      </div>
+      
+      <div class="mt-12 text-center">
+        <a
+          href="/locations/"
+          class="inline-flex items-center gap-2 rounded-xl border-2 border-border bg-card px-8 py-4 font-bold transition-all hover:border-primary hover:text-primary hover:shadow-glow"
+        >
+          Explore All Service Areas
+          <LucideIcons.ArrowRight size={20} />
+        </a>
+      </div>
+    </Section>
+  )}
+
+  <!-- ============================================ -->
+  <!-- FINAL CTA -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="primary" className="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10"></div>
+    
+    <div class="mx-auto max-w-4xl text-center relative z-10">
+      <h2 class="font-display text-3xl font-bold tracking-tight text-white sm:text-5xl lg:text-7xl">
+        Locked Out in {location.data.name}?
+      </h2>
+      <p class="mx-auto mt-8 max-w-2xl text-xl text-primary-foreground/90 lg:text-2xl">
+        Expert locksmith solutions available 24/7. Get your free over-the-phone consultation and dispatch the nearest technician instantly.
+      </p>
+      
+      <div class="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row">
+        <a
+          href="/book/"
+          class="inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-xl bg-white px-10 py-5 text-xl font-bold text-primary shadow-2xl transition-all hover:bg-white/90 hover:scale-105 active:scale-95"
+        >
+          <LucideIcons.CalendarPlus size={28} />
+          Book Appointment
+        </a>
+        <a
+          href={`tel:${siteConfig.contact.phone.href}`}
+          class="inline-flex w-full sm:w-auto items-center justify-center gap-3 rounded-xl border-2 border-white/40 bg-white/10 px-10 py-5 text-xl font-bold text-white backdrop-blur-md transition-all hover:bg-white/20 hover:scale-105 active:scale-95"
+        >
+          <LucideIcons.Phone size={28} />
+          {siteConfig.contact.phone.display}
+        </a>
+      </div>
+      
+      <div class="mt-10 flex flex-wrap justify-center gap-8 text-primary-foreground/60 text-sm font-bold uppercase tracking-widest">
+        <span class="flex items-center gap-2"><LucideIcons.CheckCircle size={16} /> Free Estimates</span>
+        <span class="flex items-center gap-2"><LucideIcons.CheckCircle size={16} /> Licensed Experts</span>
+        <span class="flex items-center gap-2"><LucideIcons.CheckCircle size={16} /> 24/7 Priority</span>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+  
+  <!-- Floating Elements -->
+  <ScrollToTop client:load />
+  <PhoneCTA client:load position="bottom-left" />
+</BaseLayout>
+
+<style>
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+</style>

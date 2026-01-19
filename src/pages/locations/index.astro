@@ -1,0 +1,162 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/common/Header.astro';
+import Footer from '../../components/common/Footer.astro';
+import Schema from '../../components/common/Schema.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import { Section, LocationCard, Badge } from '../../components/ui';
+import * as LucideIcons from 'lucide-react';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../../config/site.config';
+import { getLocalBusinessSchema } from '../../utils/schema';
+import { ServiceAreaMap } from '../../components/maps/ServiceAreaMap';
+
+const locations = await getCollection('locations', ({ data }) => !data.draft);
+const sortedLocations = locations.sort((a, b) => (a.data.order || 99) - (b.data.order || 99));
+
+const schemas = [getLocalBusinessSchema()];
+
+const breadcrumbItems = [{ label: 'Service Areas', href: '/locations/' }];
+---
+
+<BaseLayout
+  title="NJ Locksmith Service Areas"
+  description="Professional 24/7 locksmith services across Northern New Jersey. Residential, commercial & automotive. Find your local service area."
+  ogImage="/images/produced/hero-locations.png"
+>
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="mx-auto max-w-4xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          <Icon name="lucide:map-pin" class="mr-1 h-4 w-4" />
+          {siteConfig.serviceArea.region}
+        </Badge>
+
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          Locksmith Service Areas in NJ
+        </h1>
+
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+          {siteConfig.name} provides professional locksmith services throughout {
+            siteConfig.serviceArea.region
+          } and surrounding areas. Find your location below.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coverage Area (Map) -->
+  <Section client:load size="lg" background="muted" className="relative overflow-hidden">
+    <div class="absolute -right-24 -top-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
+
+    <div class="relative z-10 text-center">
+      <Badge client:load variant="secondary" className="mb-4">Coverage Mastery</Badge>
+      <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        Every Corner of {siteConfig.serviceArea.region}
+      </h2>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+        Our mobile units are strategically positioned across the greater {
+          siteConfig.serviceArea.primaryCity
+        } area to provide rapid response. If you don't see your town, we likely still cover it.
+      </p>
+    </div>
+
+    <div class="relative z-10 mt-12">
+      <div
+        class="group relative overflow-hidden rounded-[2.5rem] border border-border bg-card shadow-2xl"
+      >
+        {
+          siteConfig.apiKeys.googleMaps ? (
+            <ServiceAreaMap
+              client:visible
+              apiKey={siteConfig.apiKeys.googleMaps}
+              center={siteConfig.serviceArea.coordinates}
+              zoom={10}
+              serviceAreas={siteConfig.locations.map((loc) => ({
+                name: loc.name,
+                coordinates: loc.coordinates,
+              }))}
+              height="450px"
+            />
+          ) : (
+            <div class="flex h-[450px] flex-col items-center justify-center p-8 text-muted-foreground">
+              <div class="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <LucideIcons.Map size={40} />
+              </div>
+              <p class="font-display text-xl font-bold text-foreground">Interactive Service Map</p>
+              <p class="mt-2 max-w-xs text-center text-sm">
+                Our 24/7 mobile fleet covers all major hubs and residential districts in the{' '}
+                {siteConfig.serviceArea.region} area.
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </Section>
+
+  <!-- Locations Grid -->
+  <Section client:load size="lg" background="default">
+    <div class="mx-auto mb-12 max-w-3xl text-center">
+      <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+        Our Service Locations
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground">
+        Select your city to learn about local locksmith services and get a free estimate.
+      </p>
+    </div>
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        sortedLocations.map((location) => (
+          <LocationCard client:load {...location.data} slug={location.slug} />
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- CTA Section -->
+  <Section client:load size="lg" background="primary" className="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10">
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-4xl text-center">
+      <h2 class="font-display text-3xl font-bold tracking-tight text-white sm:text-5xl">
+        Need Help in Your Neighborhood?
+      </h2>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-primary-foreground/90 lg:text-xl">
+        Speak with a local dispatcher to confirm service availability and get an instant quote for
+        your security needs.
+      </p>
+
+      <div class="mt-10 flex flex-col items-center justify-center gap-5 sm:flex-row">
+        <a
+          href={`tel:${siteConfig.contact.phone.href}`}
+          class="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-white px-10 py-5 text-lg font-bold text-primary shadow-2xl transition-all hover:scale-105 hover:bg-white/90 active:scale-95 sm:w-auto"
+        >
+          <LucideIcons.Phone size={24} />
+          Call {siteConfig.contact.phone.display}
+        </a>
+        <a
+          href="/book/"
+          class="inline-flex w-full items-center justify-center gap-3 rounded-xl border-2 border-white/40 bg-white/10 px-10 py-5 text-lg font-bold text-white backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20 active:scale-95 sm:w-auto"
+        >
+          <LucideIcons.CalendarPlus size={24} />
+          Book Online
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

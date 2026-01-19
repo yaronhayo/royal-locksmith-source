@@ -1,0 +1,397 @@
+---
+/**
+ * Header Component
+ * 
+ * Sticky navigation header with:
+ * - Logo and brand
+ * - Main navigation with mega-menu dropdowns
+ * - Mobile menu
+ * - Theme toggle
+ * - CTA button
+ * - Phone number
+ */
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../../config/site.config';
+import ThemeToggle from './ThemeToggle.astro';
+
+const { pathname } = Astro.url;
+const { navigation, contact, locations } = siteConfig;
+
+// Get all services from content collection for mega-menu
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+const sortedServices = allServices.sort((a, b) => (a.data.order || 99) - (b.data.order || 99));
+
+// Group services by category
+const serviceCategories = {
+  residential: sortedServices.filter(s => s.data.category === 'residential' || s.slug === 'residential'),
+  commercial: sortedServices.filter(s => s.data.category === 'commercial' || s.slug === 'commercial'),
+  automotive: sortedServices.filter(s => s.data.category === 'automotive' || s.slug === 'automotive'),
+  emergency: sortedServices.filter(s => s.data.category === 'emergency' || s.slug === 'emergency'),
+};
+
+---
+
+<header 
+  id="site-header"
+  class="sticky top-0 z-50 w-full border-b border-transparent bg-background/80 backdrop-blur-lg transition-all duration-300"
+>
+  <!-- Top Bar (visible on larger screens) -->
+  <div class="hidden border-b border-border bg-muted/50 lg:block">
+    <div class="container-custom flex items-center justify-end py-2 text-sm">
+      <div class="flex items-center gap-6">
+        <span class="flex items-center gap-2 text-muted-foreground">
+          <Icon name="lucide:map-pin" class="h-4 w-4" />
+          Serving {siteConfig.serviceArea.region}
+        </span>
+        <span class="flex items-center gap-2 text-muted-foreground">
+          <Icon name="lucide:clock" class="h-4 w-4" />
+          {contact.hours}
+        </span>
+        <a
+          href={`tel:${contact.phone.href}`}
+          class="flex items-center gap-2 font-semibold text-primary"
+        >
+          <Icon name="lucide:phone" class="h-4 w-4" />
+          {contact.phone.display}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Header -->
+  <div class="container-custom">
+    <nav class="flex h-16 items-center justify-between lg:h-20" aria-label="Main navigation">
+      <!-- Logo -->
+      <a href="/" class="flex items-center" aria-label="Home">
+        <img 
+          src="/images/logo.webp" 
+          alt={siteConfig.name} 
+          class="h-12 w-auto lg:h-14"
+        />
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden items-center gap-1 lg:flex">
+        {navigation.main.map((item) => (
+          'hasDropdown' in item && item.hasDropdown ? (
+            <div class="group relative">
+              <button
+                class:list={[
+                  'flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                  pathname.startsWith(item.href)
+                    ? 'text-primary'
+                    : 'text-foreground hover:bg-muted hover:text-primary',
+                ]}
+                aria-expanded="false"
+                aria-haspopup="true"
+              >
+                {item.label}
+                <Icon name="lucide:chevron-down" class="h-4 w-4 transition-transform group-hover:rotate-180" />
+              </button>
+              
+              <!-- Dropdown Menu - Mega Menu for Services -->
+              {item.label === 'Services' && (
+                <div class="invisible absolute left-1/2 top-full z-50 -translate-x-1/2 translate-y-2 rounded-2xl border border-border bg-card p-4 opacity-0 shadow-2xl transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100" style="width: min(800px, 95vw);">
+                  <div class="grid grid-cols-4 gap-4">
+                    {/* Residential Column */}
+                    <div>
+                      <a href="/services/residential/" class="mb-2 flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                        <Icon name="lucide:home" class="h-4 w-4" />
+                        Residential
+                      </a>
+                      <div class="space-y-1">
+                        {serviceCategories.residential.filter(s => s.slug !== 'residential').map(service => (
+                          <a href={`/services/${service.slug}/`} class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                            {service.data.title}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Commercial Column */}
+                    <div>
+                      <a href="/services/commercial/" class="mb-2 flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                        <Icon name="lucide:building-2" class="h-4 w-4" />
+                        Commercial
+                      </a>
+                      <div class="space-y-1">
+                        {serviceCategories.commercial.filter(s => s.slug !== 'commercial').map(service => (
+                          <a href={`/services/${service.slug}/`} class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                            {service.data.title}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Automotive Column */}
+                    <div>
+                      <a href="/services/automotive/" class="mb-2 flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                        <Icon name="lucide:car" class="h-4 w-4" />
+                        Automotive
+                      </a>
+                      <div class="space-y-1">
+                        {serviceCategories.automotive.filter(s => s.slug !== 'automotive').map(service => (
+                          <a href={`/services/${service.slug}/`} class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                            {service.data.title}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Emergency Column */}
+                    <div>
+                      <a href="/services/emergency/" class="mb-2 flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                        <Icon name="lucide:siren" class="h-4 w-4" />
+                        Emergency
+                      </a>
+                      <div class="space-y-1">
+                        {serviceCategories.emergency.filter(s => s.slug !== 'emergency').map(service => (
+                          <a href={`/services/${service.slug}/`} class="block rounded-md px-2 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                            {service.data.title}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-4 border-t border-border pt-3">
+                    <a href="/services/" class="flex items-center justify-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-muted/80">
+                      View All Services
+                      <Icon name="lucide:arrow-right" class="h-4 w-4" />
+                    </a>
+                  </div>
+                </div>
+              )}
+              {/* Service Areas Dropdown */}
+              {item.label === 'Service Areas' && (
+                <div class="invisible absolute left-0 top-full z-50 min-w-[280px] translate-y-2 rounded-xl border border-border bg-card p-2 opacity-0 shadow-xl transition-all group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                  {locations.slice(0, 8).map((location) => (
+                  <a
+                    href={`/locations/${location.slug}/`}
+                    class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors hover:bg-muted"
+                  >
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Icon name="lucide:map-pin" class="h-4 w-4" />
+                    </div>
+                    <div class="font-medium">{location.name}</div>
+                  </a>
+                  ))}
+                <div class="mt-1 border-t border-border pt-1">
+                  <a
+                    href="/locations/"
+                    class="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-muted"
+                  >
+                    View All Service Areas
+                    <Icon name="lucide:arrow-right" class="h-4 w-4" />
+                  </a>
+                </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              class:list={[
+                'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                pathname === item.href || pathname.startsWith(item.href + '/')
+                  ? 'text-primary'
+                  : 'text-foreground hover:bg-muted hover:text-primary',
+              ]}
+            >
+              {item.label}
+            </a>
+          )
+        ))}
+      </div>
+
+      <!-- Right Side Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Phone (visible on medium screens) -->
+        <a
+          href={`tel:${contact.phone.href}`}
+          class="hidden items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary md:flex lg:hidden"
+        >
+          <Icon name="lucide:phone" class="h-4 w-4" />
+          {contact.phone.display}
+        </a>
+
+        <!-- Theme Toggle -->
+        <ThemeToggle />
+
+        <!-- CTA Button -->
+        <a
+          href={navigation.cta.href}
+          class="hidden items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 sm:flex"
+        >
+          <Icon name={`lucide:${navigation.cta.icon}`} class="h-4 w-4" />
+          {navigation.cta.label}
+        </a>
+
+        <!-- Mobile Menu Button -->
+        <button
+          id="mobile-menu-button"
+          class="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card lg:hidden"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+        >
+          <Icon name="lucide:menu" class="h-5 w-5" id="menu-icon" />
+          <Icon name="lucide:x" class="hidden h-5 w-5" id="close-icon" />
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    id="mobile-menu"
+    class="hidden border-t border-border bg-card lg:hidden"
+    aria-hidden="true"
+  >
+    <div class="container-custom py-4">
+      <!-- Phone CTA -->
+      <a
+        href={`tel:${contact.phone.href}`}
+        class="mb-4 flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground"
+      >
+        <Icon name="lucide:phone" class="h-5 w-5" />
+        Call {contact.phone.display}
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="space-y-1">
+        {navigation.main.map((item) => (
+          'hasDropdown' in item && item.hasDropdown ? (
+            <div class="mobile-dropdown">
+              <button
+                class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-left font-medium transition-colors hover:bg-muted"
+                aria-expanded="false"
+              >
+                {item.label}
+                <Icon name="lucide:chevron-down" class="h-4 w-4 transition-transform dropdown-icon" />
+              </button>
+              <div class="dropdown-content hidden space-y-2 pl-4">
+                {/* Residential Services */}
+                <div class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-2">Residential</div>
+                {serviceCategories.residential.map((service) => (
+                  <a
+                    href={`/services/${service.slug}/`}
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm transition-colors hover:bg-muted"
+                  >
+                    <Icon name="lucide:home" class="h-4 w-4 text-primary" />
+                    {service.data.title}
+                  </a>
+                ))}
+                {/* Commercial Services */}
+                <div class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-2">Commercial</div>
+                {serviceCategories.commercial.map((service) => (
+                  <a
+                    href={`/services/${service.slug}/`}
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm transition-colors hover:bg-muted"
+                  >
+                    <Icon name="lucide:building-2" class="h-4 w-4 text-primary" />
+                    {service.data.title}
+                  </a>
+                ))}
+                {/* Automotive Services */}
+                <div class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-2">Automotive</div>
+                {serviceCategories.automotive.map((service) => (
+                  <a
+                    href={`/services/${service.slug}/`}
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm transition-colors hover:bg-muted"
+                  >
+                    <Icon name="lucide:car" class="h-4 w-4 text-primary" />
+                    {service.data.title}
+                  </a>
+                ))}
+                {/* Emergency Services */}
+                <div class="text-xs font-semibold uppercase tracking-wider text-muted-foreground pt-2">Emergency</div>
+                {serviceCategories.emergency.map((service) => (
+                  <a
+                    href={`/services/${service.slug}/`}
+                    class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm transition-colors hover:bg-muted"
+                  >
+                    <Icon name="lucide:siren" class="h-4 w-4 text-primary" />
+                    {service.data.title}
+                  </a>
+                ))}
+                <a
+                  href={item.href}
+                  class="flex items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-muted"
+                >
+                  View All
+                  <Icon name="lucide:arrow-right" class="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+          ) : (
+            <a
+              href={item.href}
+              class:list={[
+                'block rounded-lg px-4 py-3 font-medium transition-colors hover:bg-muted',
+                pathname === item.href || pathname.startsWith(item.href + '/')
+                  ? 'text-primary'
+                  : '',
+              ]}
+            >
+              {item.label}
+            </a>
+          )
+        ))}
+      </nav>
+
+      <!-- Book Service CTA -->
+      <a
+        href={navigation.cta.href}
+        class="mt-4 flex items-center justify-center gap-2 rounded-lg border border-primary bg-primary/5 px-6 py-3 font-semibold text-primary"
+      >
+        <Icon name={`lucide:${navigation.cta.icon}`} class="h-5 w-5" />
+        {navigation.cta.label}
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle
+  const menuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuIcon = document.getElementById('menu-icon');
+  const closeIcon = document.getElementById('close-icon');
+
+  menuButton?.addEventListener('click', () => {
+    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+    menuButton.setAttribute('aria-expanded', (!isExpanded).toString());
+    mobileMenu?.classList.toggle('hidden');
+    mobileMenu?.setAttribute('aria-hidden', isExpanded.toString());
+    menuIcon?.classList.toggle('hidden');
+    closeIcon?.classList.toggle('hidden');
+  });
+
+  // Mobile dropdown toggles
+  document.querySelectorAll('.mobile-dropdown button').forEach((button) => {
+    button.addEventListener('click', () => {
+      const dropdown = button.parentElement;
+      const content = dropdown?.querySelector('.dropdown-content');
+      const icon = button.querySelector('.dropdown-icon');
+      
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', (!isExpanded).toString());
+      content?.classList.toggle('hidden');
+      icon?.classList.toggle('rotate-180');
+    });
+  });
+
+  // Sticky header shadow on scroll
+  const header = document.getElementById('site-header');
+  
+  const updateHeader = () => {
+    if (window.scrollY > 10) {
+      header?.classList.add('shadow-md', 'border-border');
+      header?.classList.remove('border-transparent');
+    } else {
+      header?.classList.remove('shadow-md', 'border-border');
+      header?.classList.add('border-transparent');
+    }
+  };
+
+  window.addEventListener('scroll', updateHeader, { passive: true });
+  updateHeader();
+</script>

@@ -1,0 +1,195 @@
+---
+/**
+ * Blog Index Page
+ *
+ * Blog listing page with:
+ * - Featured posts
+ * - Category filtering
+ * - Pagination support
+ * - SEO optimization
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/common/Header.astro';
+import Footer from '../../components/common/Footer.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import { Section, Badge, BlogCard } from '../../components/ui';
+import { Icon } from 'astro-icon/components';
+import * as LucideIcons from 'lucide-react';
+import { siteConfig } from '../../config/site.config';
+import { getCollection } from 'astro:content';
+
+// Get all blog posts, sorted by date
+const allPosts = await getCollection('blog');
+const posts = allPosts
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => new Date(b.data.publishedAt).getTime() - new Date(a.data.publishedAt).getTime());
+
+// Get unique categories
+const categories = [...new Set(posts.map((post) => post.data.category).filter(Boolean))];
+
+const breadcrumbItems = [{ label: 'Blog', href: '/blog/' }];
+
+// Featured post (most recent)
+const featuredPost = posts[0];
+const remainingPosts = posts.slice(1);
+---
+
+<BaseLayout
+  title="Locksmith Tips & Home Security Blog"
+  description={`Read the latest locksmith tips, home security advice, and industry insights from ${siteConfig.name}. Expert guidance for residential, commercial, and automotive security in ${siteConfig.serviceArea.stateFullName}.`}
+>
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="mx-auto max-w-4xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          <Icon name="lucide:newspaper" class="mr-2 h-4 w-4" />
+          Our Blog
+        </Badge>
+
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          Locksmith Tips & Security Insights
+        </h1>
+
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+          Expert advice on home security, lock maintenance, and protecting what matters most. Stay
+          informed with the latest industry insights.
+        </p>
+      </div>
+    </div>
+
+    <!-- Decorative elements -->
+    <div class="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
+    <div class="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-accent/5 blur-3xl"></div>
+  </section>
+
+  <!-- Category Filter -->
+  {
+    categories.length > 0 && (
+      <Section client:load size="sm" background="muted">
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <span class="text-sm font-medium text-muted-foreground">Browse by topic:</span>
+          <a
+            href="/blog/"
+            class="rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm"
+          >
+            All Posts
+          </a>
+          {categories.map((category) => (
+            <a
+              href={`/blog/category/${category?.toLowerCase().replace(/\s+/g, '-')}/`}
+              class="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-all hover:border-primary hover:bg-primary/5 hover:text-primary"
+            >
+              {category}
+            </a>
+          ))}
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- Featured Post -->
+  {
+    featuredPost && (
+      <Section client:load size="lg" background="default">
+        <div class="mx-auto max-w-5xl">
+          <Badge client:load variant="secondary" className="mb-4">
+            Featured Article
+          </Badge>
+
+          <BlogCard
+            client:load
+            {...featuredPost.data}
+            slug={featuredPost.slug}
+            date={featuredPost.data.publishedAt}
+            excerpt={featuredPost.data.description}
+            featured={true}
+          />
+        </div>
+      </Section>
+    )
+  }
+
+  <!-- All Posts Grid -->
+  <Section client:load size="lg" background={featuredPost ? 'muted' : 'default'}>
+    <div class="mx-auto max-w-3xl text-center">
+      <h2 class="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        {featuredPost ? 'More Articles' : 'All Articles'}
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground">
+        Browse our collection of helpful guides and security tips.
+      </p>
+    </div>
+
+    {
+      remainingPosts.length > 0 ? (
+        <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {remainingPosts.map((post) => (
+            <BlogCard
+              client:load
+              {...post.data}
+              slug={post.slug}
+              date={post.data.publishedAt}
+              excerpt={post.data.description}
+            />
+          ))}
+        </div>
+      ) : (
+        !featuredPost && (
+          <div class="mt-12 text-center">
+            <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-muted">
+              <Icon name="lucide:file-text" class="h-12 w-12 text-muted-foreground/50" />
+            </div>
+            <h3 class="mt-6 font-display text-lg font-bold">No posts yet</h3>
+            <p class="mt-2 text-lg text-muted-foreground">
+              Check back soon for helpful locksmith tips and security advice.
+            </p>
+          </div>
+        )
+      )
+    }
+  </Section>
+
+  <!-- Newsletter CTA -->
+  <Section client:load size="lg" background="primary" className="relative overflow-hidden">
+    <!-- Decorative background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10">
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-3xl text-center">
+      <div
+        class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-primary-foreground backdrop-blur-sm"
+      >
+        <Icon name="lucide:mail" class="h-8 w-8" />
+      </div>
+
+      <h2 class="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        Stay Updated
+      </h2>
+
+      <p class="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/90">
+        Get the latest security tips and locksmith advice delivered directly to your inbox.
+      </p>
+
+      <div class="mt-8">
+        <a
+          href="/contact/"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-bold text-primary shadow-xl transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+        >
+          <LucideIcons.Bell size={20} />
+          Subscribe for Updates
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

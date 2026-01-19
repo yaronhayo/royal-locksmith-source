@@ -1,0 +1,319 @@
+---
+/**
+ * Reviews Page
+ *
+ * Customer testimonials and reviews page with:
+ * - Review schema for rich results
+ * - Aggregate rating display from ALL testimonials
+ * - Progressive reveal with "See More" buttons
+ * - Trust signals and social proof
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Schema from '../components/common/Schema.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { Section, Badge, ReviewsGrid } from '../components/ui';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+import { getPageImage } from '../config/image-registry';
+import { getLocalBusinessSchema } from '../utils/schema';
+
+// Get ALL testimonials from content collection
+const allTestimonials = await getCollection('testimonials');
+
+// Helper function to format date on server side (avoids hydration mismatch)
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+// Sort by raw date first, then format for display
+const reviews = allTestimonials
+  .sort(
+    (a, b) =>
+      new Date(b.data.date || '2024-01-01').getTime() -
+      new Date(a.data.date || '2024-01-01').getTime()
+  )
+  .map((t) => ({
+    name: t.data.name,
+    location: t.data.location || 'Northern NJ',
+    rating: t.data.rating,
+    service: t.data.service || 'General',
+    text: t.data.text,
+    date: formatDate(t.data.date || '2024-12-01'),
+    verified: t.data.verified ?? true,
+  }));
+
+// Calculate aggregate rating
+const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+const averageRating = (totalRating / reviews.length).toFixed(1);
+
+// Group reviews by service type
+const serviceTypes = [...new Set(reviews.map((r) => r.service))];
+
+// Generate individual Review schemas for each testimonial
+const reviewSchemas = reviews.map((review) => ({
+  '@context': 'https://schema.org',
+  '@type': 'Review',
+  itemReviewed: {
+    '@type': 'Locksmith',
+    '@id': `${siteConfig.url}/#organization`,
+    name: siteConfig.name,
+  },
+  author: {
+    '@type': 'Person',
+    name: review.name,
+  },
+  reviewRating: {
+    '@type': 'Rating',
+    ratingValue: review.rating,
+    bestRating: 5,
+    worstRating: 1,
+  },
+  reviewBody: review.text,
+  datePublished: review.date,
+}));
+
+// AggregateRating schema for the reviews page
+const aggregateRatingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${siteConfig.url}/#organization`,
+  name: siteConfig.name,
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: averageRating,
+    reviewCount: reviews.length,
+    bestRating: 5,
+    worstRating: 1,
+  },
+};
+
+const schemas = [
+  getLocalBusinessSchema(),
+  JSON.stringify(aggregateRatingSchema),
+  ...reviewSchemas.map((s) => JSON.stringify(s)),
+];
+
+const breadcrumbItems = [{ label: 'Reviews', href: '/reviews/' }];
+
+// Star rating component helper
+function getStars(rating: number) {
+  return Array.from({ length: 5 }, (_, i) => (i < rating ? 'filled' : 'empty'));
+}
+---
+
+<BaseLayout
+  title="NJ Locksmith Reviews | Customer Testimonials"
+  description={`Read verified customer reviews for ${siteConfig.name}. See why homeowners and businesses trust our ${averageRating}-star rated locksmith services in ${siteConfig.serviceArea.region}.`}
+  ogImage={getPageImage('reviews').og}
+>
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="mx-auto max-w-4xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          <Icon name="lucide:star" class="mr-2 h-4 w-4" />
+          Customer Reviews
+        </Badge>
+
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          What Our Customers Say
+        </h1>
+
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+          Don't just take our word for it. Read verified reviews from satisfied customers across {
+            siteConfig.serviceArea.region
+          }.
+        </p>
+
+        <!-- Aggregate Rating Display -->
+        <div
+          class="mt-8 inline-flex items-center gap-4 rounded-2xl border border-border bg-card px-8 py-4 shadow-lg"
+        >
+          <div class="text-center">
+            <div class="text-4xl font-bold text-primary">{averageRating}</div>
+            <div class="flex items-center gap-1">
+              {
+                getStars(Math.round(Number(averageRating))).map((star) => (
+                  <svg
+                    class={`h-5 w-5 ${star === 'filled' ? 'fill-warning-500 text-warning-500' : 'fill-muted-foreground/30 text-muted-foreground/30'}`}
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                  </svg>
+                ))
+              }
+            </div>
+          </div>
+          <div class="h-12 w-px bg-border"></div>
+          <div class="text-left">
+            <div class="font-semibold">{reviews.length} Reviews</div>
+            <div class="text-sm text-muted-foreground">Verified Customers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decorative elements -->
+    <div class="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
+    <div class="bg-warning/5 absolute -left-24 -top-24 h-96 w-96 rounded-full blur-3xl"></div>
+  </section>
+
+  <!-- Trust Badges -->
+  <Section client:load size="md" background="muted">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          {
+            icon: 'lucide:shield-check',
+            label: 'Licensed & Insured',
+            value: `License #${siteConfig.trustSignals.licenseNumber}`,
+          },
+          {
+            icon: 'lucide:award',
+            label: 'Years of Experience',
+            value: `${siteConfig.trustSignals.yearsInBusiness}+ Years`,
+          },
+          { icon: 'lucide:users', label: 'Satisfied Customers', value: 'Thousands Served' },
+          { icon: 'lucide:star', label: 'Average Rating', value: `${averageRating} out of 5` },
+        ].map((badge) => (
+          <div class="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name={badge.icon} class="h-6 w-6" />
+            </div>
+            <div>
+              <div class="text-sm text-muted-foreground">{badge.label}</div>
+              <div class="font-semibold">{badge.value}</div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Filter by Service -->
+  <Section client:load size="sm" background="default">
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <span class="text-sm font-medium text-muted-foreground">Filter by service:</span>
+      <button class="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
+        All Reviews
+      </button>
+      {
+        serviceTypes.map((service) => (
+          <button class="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:text-primary">
+            {service}
+          </button>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- Reviews Grid with Progressive Reveal -->
+  <Section client:load size="lg" background="default">
+    <ReviewsGrid client:visible reviews={reviews} itemsPerPage={12} />
+  </Section>
+
+  <!-- Review Platforms -->
+  <Section client:load size="lg" background="muted">
+    <div class="mx-auto max-w-3xl text-center">
+      <h2 class="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+        Find Us On These Platforms
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground">
+        We're proud of our reputation across multiple review platforms. Check out what customers are
+        saying.
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-6">
+        {
+          [
+            { name: 'Google', icon: 'lucide:globe', url: siteConfig.socials.google },
+            { name: 'Yelp', icon: 'lucide:star', url: siteConfig.socials.yelp },
+            { name: 'Facebook', icon: 'lucide:facebook', url: siteConfig.socials.facebook },
+          ]
+            .filter((p) => p.url)
+            .map((platform) => (
+              <a
+                href={platform.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="group flex items-center gap-3 rounded-xl border border-border bg-card px-6 py-4 transition-all hover:border-primary hover:shadow-glow"
+              >
+                <Icon
+                  name={platform.icon}
+                  class="h-6 w-6 text-primary transition-transform group-hover:scale-110"
+                />
+                <span class="font-medium transition-colors group-hover:text-primary">
+                  {platform.name}
+                </span>
+                <Icon name="lucide:external-link" class="h-4 w-4 text-muted-foreground" />
+              </a>
+            ))
+        }
+      </div>
+    </div>
+  </Section>
+
+  <!-- CTA Section -->
+  <Section client:load size="lg" background="primary" className="relative overflow-hidden">
+    <!-- Decorative background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10">
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-3xl text-center">
+      <div
+        class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-primary-foreground backdrop-blur-sm"
+      >
+        <Icon name="lucide:message-square-plus" class="h-8 w-8" />
+      </div>
+
+      <h2
+        class="font-display text-3xl font-bold tracking-tight text-primary-foreground text-white sm:text-4xl"
+      >
+        Ready to Experience Our Service?
+      </h2>
+
+      <p class="mx-auto mt-4 max-w-xl text-lg text-primary-foreground/90">
+        Join our thousands of satisfied customers. Contact us today for a free estimate on your
+        locksmith needs.
+      </p>
+
+      <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="/book/"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-bold text-primary shadow-xl transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+        >
+          <Icon name="lucide:calendar-plus" class="h-5 w-5" />
+          Book Service
+        </a>
+
+        <a
+          href={`tel:${siteConfig.contact.phone.href}`}
+          class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-white/10 px-8 py-4 text-lg font-bold text-primary-foreground backdrop-blur-md transition-all hover:bg-white/20"
+        >
+          <Icon name="lucide:phone" class="h-5 w-5" />
+          Call {siteConfig.contact.phone.display}
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

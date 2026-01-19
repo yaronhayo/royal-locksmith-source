@@ -1,0 +1,44 @@
+# Robots.txt for Royal Locksmith
+# https://royallocksmithnj.com/robots.txt
+
+# Allow all standard crawlers
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_astro/
+
+# Google
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# AI Crawlers - Customize based on your preference
+# Uncomment to block AI training crawlers
+
+# User-agent: GPTBot
+# Disallow: /
+
+# User-agent: ChatGPT-User
+# Disallow: /
+
+# User-agent: Google-Extended
+# Disallow: /
+
+# User-agent: CCBot
+# Disallow: /
+
+# User-agent: anthropic-ai
+# Disallow: /
+
+# Sitemap location
+Sitemap: https://www.royallocksmithnj.com/sitemap-index.xml

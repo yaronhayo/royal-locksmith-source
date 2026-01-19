@@ -1,0 +1,842 @@
+---
+/**
+ * Service Detail Page - Content-Rich Template
+ * 
+ * Comprehensive, consumer-centric service page with:
+ * - Hero section with booking form and trust signals
+ * - Visual service overview with images
+ * - Detailed service breakdown with icons
+ * - Process/How it works section
+ * - Benefits and features grid
+ * - Before/After or case study section
+ * - Pricing transparency (free estimate focus)
+ * - FAQ section with schema
+ * - Testimonials specific to service
+ * - Related services
+ * - Multiple CTAs throughout
+ * - Sticky sidebar with conversion elements
+ */
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/common/Header.astro';
+import Footer from '../../components/common/Footer.astro';
+import Schema from '../../components/common/Schema.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import { Section, Badge, Card, CardContent, Accordion } from '../../components/ui';
+import { HeroBookingForm } from '../../components/forms/HeroBookingForm';
+import { StickySidebar } from '../../components/widgets/StickySidebar';
+import { ScrollToTop } from '../../components/common/ScrollToTop';
+import { PhoneCTA } from '../../components/widgets/PhoneCTA';
+import { ReviewsCarousel } from '../../components/widgets/ReviewsCarousel';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../../config/site.config';
+import { getServiceImage } from '../../config/image-registry';
+import { getServiceSchema, getFAQSchema, getLocalBusinessSchema } from '../../utils/schema';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services', ({ data }) => !data.draft);
+  return services.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+interface Props {
+  service: CollectionEntry<'services'>;
+}
+
+const { service } = Astro.props;
+const { Content } = await service.render();
+
+// Get service config
+// Service config for additional metadata if needed
+// const serviceConfig = siteConfig.services.find(s => s.slug === service.slug);
+
+// Get related services
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+const relatedServices = allServices.filter(s => s.slug !== service.slug).slice(0, 3);
+
+// Get testimonials for this service type (12 for carousel)
+const allTestimonials = await getCollection('testimonials');
+const serviceTestimonials = [
+  // First: testimonials specifically for this service category
+  ...allTestimonials.filter(t => t.data.category === service.slug),
+  // Second: testimonials matching service type
+  ...allTestimonials.filter(t => 
+    t.data.service?.toLowerCase().includes(service.slug.toLowerCase()) &&
+    t.data.category !== service.slug
+  ),
+  // Third: featured testimonials as backup
+  ...allTestimonials.filter(t => t.data.featured && t.data.category !== service.slug),
+  // Fourth: general testimonials to fill to 12
+  ...allTestimonials.filter(t => !t.data.category && !t.data.featured),
+].slice(0, 12).map(t => t.data);
+
+// Default FAQ if not provided in content
+const serviceFAQ = service.data.faqs || [
+  {
+    question: `What ${service.data.title.toLowerCase()} services do you offer?`,
+    answer: `We provide comprehensive ${service.data.title.toLowerCase()} services including installation, repair, maintenance, and upgrades. Our licensed technicians are trained to handle all types of ${service.data.title.toLowerCase()} needs with expertise and professionalism.`,
+  },
+  {
+    question: 'How do I know if I need this service?',
+    answer: `Common signs include difficulty operating your locks, visible wear or damage, security concerns, or simply wanting to upgrade your current system. Our technicians provide free on-site assessments to evaluate your specific situation and recommend the best solution.`,
+  },
+  {
+    question: 'Do you provide free estimates?',
+    answer: 'Yes, we provide free on-site inspections and estimates for all services. Our technician will assess your needs, explain all available options, and provide a detailed quote before any work begins. There is absolutely no obligation to proceed.',
+  },
+  {
+    question: 'Are your technicians licensed and insured?',
+    answer: `Yes, all our technicians are fully licensed (License #${siteConfig.trustSignals.licenseNumber}), insured, and background-checked. We maintain the highest standards of professionalism, and our team undergoes continuous training to stay current with the latest security technologies.`,
+  },
+  {
+    question: 'What brands and types of locks do you work with?',
+    answer: 'We work with all major lock brands and types including Schlage, Kwikset, Baldwin, Medeco, Mul-T-Lock, and many more. Whether you have traditional pin tumbler locks, high-security locks, smart locks, or commercial-grade hardware, our technicians have the expertise to service them.',
+  },
+  {
+    question: 'Do you offer any guarantees on your work?',
+    answer: 'Absolutely. We stand behind our work with a comprehensive satisfaction guarantee. All installations and repairs come with a warranty, and we use only high-quality parts and materials. Your security and satisfaction are our top priorities.',
+  },
+];
+
+// Convert FAQ for Accordion component
+const faqItems = serviceFAQ.map((faq, index) => ({
+  id: `faq-${index}`,
+  title: faq.question,
+  content: faq.answer,
+}));
+
+// Generate schemas
+const schemas = [
+  getLocalBusinessSchema(),
+  getServiceSchema(service.data.title, service.data.description),
+  getFAQSchema(serviceFAQ),
+];
+
+// Breadcrumb items
+const breadcrumbItems = [
+  { label: 'Services', href: '/services/' },
+  { label: service.data.title, href: `/services/${service.slug}/` },
+];
+
+// Service-specific icons mapping
+const serviceIcons: Record<string, string> = {
+  residential: 'lucide:home',
+  commercial: 'lucide:building-2',
+  automotive: 'lucide:car',
+  emergency: 'lucide:alert-triangle',
+};
+
+// Process steps (customize per service in content)
+const processSteps = service.data.process || [
+  { step: 1, title: 'Contact Us', description: 'Reach out via phone or our online form to describe your needs.', icon: 'lucide:phone' },
+  { step: 2, title: 'Free Assessment', description: 'Our technician arrives to evaluate your situation and discuss options.', icon: 'lucide:clipboard-check' },
+  { step: 3, title: 'Detailed Quote', description: 'Receive a transparent, no-obligation estimate before any work begins.', icon: 'lucide:file-text' },
+  { step: 4, title: 'Expert Service', description: 'Our licensed technician completes the work to the highest standards.', icon: 'lucide:wrench' },
+  { step: 5, title: 'Quality Check', description: 'We ensure everything works perfectly and answer any questions.', icon: 'lucide:check-circle' },
+];
+
+// Benefits (customize per service in content)
+const benefits = service.data.benefits || [
+  { title: 'Licensed Professionals', description: 'All technicians are fully licensed, insured, and background-checked for your peace of mind.', icon: 'lucide:shield-check' },
+  { title: 'Quality Materials', description: 'We use only high-quality, industry-leading products that meet or exceed security standards.', icon: 'lucide:award' },
+  { title: 'Transparent Process', description: 'No hidden fees or surprises. You\'ll know exactly what to expect before we begin.', icon: 'lucide:eye' },
+  { title: 'Satisfaction Guaranteed', description: 'We stand behind our work with a comprehensive warranty and satisfaction guarantee.', icon: 'lucide:thumbs-up' },
+  { title: 'Expert Knowledge', description: 'Years of experience and continuous training ensure we provide the best solutions.', icon: 'lucide:graduation-cap' },
+  { title: 'Local & Trusted', description: `Proudly serving ${siteConfig.serviceArea.region} with a reputation built on trust and reliability.`, icon: 'lucide:map-pin' },
+];
+---
+
+<BaseLayout
+  title={service.data.metaTitle || `${service.data.title} | Professional ${service.data.title.replace(/\s*Services?$/i, '')} Services`}
+  description={service.data.metaDescription || service.data.description}
+  ogImage={getServiceImage(service.slug).og}
+>
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- ============================================ -->
+  <!-- HERO SECTION with Booking Form -->
+  <!-- ============================================ -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    
+    <div class="container-custom relative py-12 lg:py-20">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+      
+      <div class="grid items-start gap-12 lg:grid-cols-5 lg:gap-16">
+        <!-- Left: Content (3 cols) -->
+        <div class="lg:col-span-3">
+          <Badge client:load variant="primary" size="lg" className="mb-4">
+            <Icon name={serviceIcons[service.slug] || 'lucide:wrench'} class="mr-2 h-4 w-4" />
+            {service.data.title}
+          </Badge>
+          
+          <h1 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            Professional {service.data.title.replace(/\s*Services?$/i, '')} Services in {siteConfig.serviceArea.region}
+          </h1>
+          
+          <p class="mt-6 text-lg text-muted-foreground lg:text-xl">
+            {service.data.description} Our licensed and insured technicians deliver expert solutions tailored to your specific needs, backed by our satisfaction guarantee.
+          </p>
+          
+          <!-- Key Benefits Quick List -->
+          <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+            {[
+              'Same-Day Service Available',
+              'Upfront Pricing—No Surprises',
+              'Non-Destructive Entry Methods',
+              'Satisfaction Guaranteed',
+            ].map((item) => (
+              <li class="flex items-center gap-2 text-sm font-medium">
+                <Icon name="lucide:check-circle" class="h-5 w-5 text-success-500" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          
+          <!-- Trust Badges -->
+          <div class="mt-8 flex flex-wrap gap-4">
+            {[
+              { icon: 'lucide:clock', label: 'Available 24/7' },
+              { icon: 'lucide:banknote', label: 'Price Before Work' },
+              { icon: 'lucide:shield-check', label: 'Licensed & Insured' },
+            ].map((badge) => (
+              <div class="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm">
+                <Icon name={badge.icon} class="h-4 w-4 text-primary" />
+                <span class="font-medium">{badge.label}</span>
+              </div>
+            ))}
+          </div>
+          
+          <!-- Phone CTA (visible on mobile) -->
+          <div class="mt-8 lg:hidden">
+            <a
+              href={`tel:${siteConfig.contact.phone.href}`}
+              class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 font-semibold text-primary-foreground shadow-lg"
+            >
+              <Icon name="lucide:phone" class="h-5 w-5" />
+              Call {siteConfig.contact.phone.display}
+            </a>
+          </div>
+        </div>
+        
+        <!-- Right: Booking Form (2 cols) -->
+        <div class="lg:col-span-2">
+          <HeroBookingForm 
+            client:load
+            recaptchaSiteKey={siteConfig.apiKeys.recaptchaSiteKey}
+            defaultService={service.slug}
+            title="Get Your Free Estimate"
+            subtitle="No obligation • Professional assessment"
+            compact={true}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- SERVICE OVERVIEW with Image -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="default">
+    <div class="grid items-start gap-12 lg:grid-cols-2 lg:gap-16">
+      <!-- Image (Sticky on desktop) -->
+      <div class="relative order-2 lg:sticky lg:top-24 lg:order-1 lg:self-start">
+        <div class="aspect-[4/3] overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 shadow-2xl ring-1 ring-border">
+          <img 
+            src={getServiceImage(service.slug).hero} 
+            alt={`${service.data.title} services`}
+            class="h-full w-full object-cover"
+            loading="lazy"
+            transition:name={`service-image-${service.slug}`}
+          />
+        </div>
+        
+        <!-- Floating Stats Card -->
+        <div class="absolute -bottom-6 -right-6 rounded-2xl border border-border bg-card p-5 shadow-xl lg:-right-12">
+          <div class="flex items-center gap-4">
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name="lucide:users" class="h-6 w-6" />
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-foreground">5,000+</div>
+              <div class="text-sm text-muted-foreground">Happy Customers</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Content -->
+      <div class="order-1 lg:order-2">
+        <Badge client:load variant="secondary" className="mb-4">About This Service</Badge>
+        <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          Expert {service.data.title} Solutions You Can Trust
+        </h2>
+        
+        <!-- Key Points Summary -->
+        <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          <div class="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <Icon name="lucide:clock" class="h-5 w-5 text-primary shrink-0" />
+            <span class="text-sm font-medium">Same-Day Service Available</span>
+          </div>
+          <div class="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <Icon name="lucide:shield-check" class="h-5 w-5 text-primary shrink-0" />
+            <span class="text-sm font-medium">Licensed & Insured</span>
+          </div>
+          <div class="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <Icon name="lucide:banknote" class="h-5 w-5 text-primary shrink-0" />
+            <span class="text-sm font-medium">Upfront Pricing</span>
+          </div>
+          <div class="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+            <Icon name="lucide:badge-check" class="h-5 w-5 text-primary shrink-0" />
+            <span class="text-sm font-medium">Satisfaction Guaranteed</span>
+          </div>
+        </div>
+        
+        <!-- Main Content with better typography -->
+        <div class="prose prose-lg dark:prose-invert mt-8 max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-li:text-muted-foreground">
+          <Content />
+        </div>
+        
+        <!-- CTA Buttons -->
+        <div class="mt-8 flex flex-wrap gap-4 border-t border-border pt-8">
+          <a
+            href="/book/"
+            class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40 hover:scale-105"
+          >
+            <Icon name="lucide:calendar-plus" class="h-5 w-5" />
+            Schedule Service
+          </a>
+          <a
+            href={`tel:${siteConfig.contact.phone.href}`}
+            class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 font-semibold transition-colors hover:border-primary hover:text-primary"
+          >
+            <Icon name="lucide:phone" class="h-5 w-5" />
+            {siteConfig.contact.phone.display}
+          </a>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- WHAT WE OFFER - Premium Feature Showcase -->
+  <!-- ============================================ -->
+  {service.data.features && service.data.features.length > 0 && (
+    <section class="relative overflow-hidden py-20 lg:py-28 bg-gradient-to-br from-muted/50 via-background to-muted/50">
+      <!-- Decorative Elements -->
+      <div class="absolute left-1/4 top-20 h-64 w-64 rounded-full bg-primary/5 blur-3xl"></div>
+      <div class="absolute right-1/4 bottom-20 h-80 w-80 rounded-full bg-accent/5 blur-3xl"></div>
+      
+      <!-- Decorative Gold Lines -->
+      <div class="absolute left-0 top-1/4 h-px w-32 bg-gradient-to-r from-transparent via-primary/40 to-primary/60"></div>
+      <div class="absolute right-0 bottom-1/4 h-px w-48 bg-gradient-to-l from-transparent via-primary/40 to-primary/60"></div>
+      
+      <div class="container-custom relative">
+        <!-- Section Header -->
+        <div class="mb-16 flex flex-col items-center text-center lg:mb-20">
+          <div class="mb-4 flex items-center gap-3">
+            <div class="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
+            <span class="text-sm font-semibold uppercase tracking-widest text-primary">What We Offer</span>
+            <div class="h-px w-12 bg-gradient-to-l from-transparent to-primary"></div>
+          </div>
+          <h2 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            Comprehensive <span class="text-primary">{service.data.title.replace(/\s*Services?$/i, '')}</span> Services
+          </h2>
+          <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
+            From basic repairs to complete installations, our expert technicians handle all your needs with precision and care.
+          </p>
+        </div>
+        
+        <!-- Features Grid -->
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {service.data.features.map((feature: string, index: number) => (
+            <div 
+              class:list={[
+                "group relative",
+                index === 0 && (service.data.features?.length ?? 0) > 4 ? "md:col-span-2 lg:col-span-1" : ""
+              ]}
+            >
+              <!-- Card -->
+              <div class="relative h-full overflow-hidden rounded-2xl border border-border bg-card p-1 transition-all duration-300 hover:border-primary/30 hover:shadow-xl">
+                <div class="relative h-full rounded-xl bg-gradient-to-br from-card to-muted/30 p-6 lg:p-8">
+                  
+                  <!-- Gold Accent Line -->
+                  <div class="absolute left-0 top-0 h-full w-1 rounded-l-xl bg-gradient-to-b from-primary via-primary/50 to-transparent"></div>
+                  
+                  <!-- Icon with Ring -->
+                  <div class="relative mb-5 inline-flex">
+                    <div class="absolute inset-0 rounded-full bg-primary/10 blur-lg transition-all group-hover:bg-primary/20"></div>
+                    <div class="relative flex h-14 w-14 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary ring-4 ring-primary/5 transition-all group-hover:border-primary/50 group-hover:ring-primary/10">
+                      <Icon name="lucide:shield-check" class="h-7 w-7" />
+                    </div>
+                  </div>
+                  
+                  <!-- Content -->
+                  <h3 class="mb-3 text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+                    {feature}
+                  </h3>
+                  <p class="text-muted-foreground leading-relaxed">
+                    Professional service delivered by our licensed, insured, and experienced technicians.
+                  </p>
+                  
+                  <!-- Hover Arrow -->
+                  <div class="mt-4 flex items-center gap-2 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                    <span>Learn more</span>
+                    <Icon name="lucide:arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <!-- CTA -->
+        <div class="mt-16 text-center">
+          <a
+            href="/book/"
+            class="group inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:shadow-primary/40 hover:scale-105"
+          >
+            <Icon name="lucide:calendar-plus" class="h-5 w-5" />
+            Get Your Free Estimate
+            <Icon name="lucide:arrow-right" class="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ============================================ -->
+  <!-- HOW IT WORKS - Modern Timeline Design -->
+  <!-- ============================================ -->
+  <section class="relative overflow-hidden py-20 lg:py-28">
+    <!-- Multi-layer gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-b from-muted/50 via-background to-muted/50"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(236,164,19,0.06),transparent_60%)]"></div>
+    
+    <div class="container-custom relative">
+      <!-- Header -->
+      <div class="mb-16 text-center lg:mb-20">
+        <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-2 text-sm font-medium text-primary backdrop-blur-sm">
+          <Icon name="lucide:sparkles" class="h-4 w-4" />
+          Simple Process
+        </div>
+        <h2 class="mt-6 font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+          From <span class="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">Call</span> to <span class="bg-gradient-to-r from-primary/80 via-primary to-primary bg-clip-text text-transparent">Complete</span>
+        </h2>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
+          Getting professional locksmith help is easy. Here's what to expect.
+        </p>
+      </div>
+      
+      <!-- Desktop: Horizontal Timeline -->
+      <div class="hidden lg:block">
+        <!-- Animated Timeline Line -->
+        <div class="relative mx-auto mb-16 h-1 max-w-5xl">
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-border via-border to-border"></div>
+          <div class="absolute inset-0 rounded-full bg-gradient-to-r from-primary via-primary/60 to-primary/20" style="animation: shimmer 3s ease-in-out infinite;"></div>
+        </div>
+        
+        <!-- Steps Row -->
+        <div class="mx-auto grid max-w-5xl grid-cols-4 gap-8">
+          {processSteps.map((step: { step?: number; title: string; description: string; icon?: string }) => (
+            <div class="group relative text-center">
+              <!-- Connector dot on timeline -->
+              <div class="absolute -top-[4.25rem] left-1/2 -translate-x-1/2">
+                <div class="h-4 w-4 rounded-full border-4 border-primary bg-background shadow-lg shadow-primary/20 ring-4 ring-primary/10 transition-all group-hover:scale-125 group-hover:shadow-primary/40"></div>
+              </div>
+              
+              <!-- Icon Container -->
+              <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-xl shadow-primary/20 ring-1 ring-white/10 transition-all duration-300 group-hover:scale-110 group-hover:shadow-primary/40">
+                <Icon name={step.icon || 'lucide:check'} class="h-8 w-8" />
+              </div>
+              
+              <!-- Content -->
+              <h3 class="mb-2 text-lg font-bold text-foreground transition-colors group-hover:text-primary">{step.title}</h3>
+              <p class="text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <!-- Mobile: Vertical Timeline -->
+      <div class="lg:hidden">
+        <div class="relative">
+          {processSteps.map((step: { step?: number; title: string; description: string; icon?: string }, index: number) => (
+            <div class="relative flex gap-6 pb-10 last:pb-0">
+              <!-- Timeline Spine -->
+              <div class="relative flex flex-col items-center">
+                <!-- Dot -->
+                <div class="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-xl shadow-primary/20">
+                  <Icon name={step.icon || 'lucide:check'} class="h-7 w-7" />
+                </div>
+                <!-- Connecting Line -->
+                {index < processSteps.length - 1 && (
+                  <div class="absolute left-1/2 top-14 h-[calc(100%-3.5rem)] w-0.5 -translate-x-1/2 bg-gradient-to-b from-primary/60 via-primary/30 to-primary/10"></div>
+                )}
+              </div>
+              
+              <!-- Content -->
+              <div class="flex-1 pt-2">
+                <h3 class="text-lg font-bold text-foreground">{step.title}</h3>
+                <p class="mt-1 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <!-- CTA -->
+      <div class="mt-16 flex justify-center">
+        <a
+          href="/book/"
+          class="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-primary to-primary/90 px-8 py-4 font-bold text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:shadow-2xl hover:shadow-primary/40"
+        >
+          <Icon name="lucide:zap" class="h-5 w-5" />
+          Get Started Now
+          <Icon name="lucide:arrow-right" class="h-5 w-5 transition-transform group-hover:translate-x-1" />
+        </a>
+      </div>
+    </div>
+  </section>
+  
+  <style>
+    @keyframes shimmer {
+      0%, 100% { opacity: 0.6; transform: translateX(-100%); }
+      50% { opacity: 1; transform: translateX(100%); }
+    }
+  </style>
+
+  <!-- ============================================ -->
+  <!-- WHY CHOOSE US - Theme-Aware Bold Design -->
+  <!-- ============================================ -->
+  <section class="relative overflow-hidden py-20 lg:py-32 bg-gradient-to-br from-muted via-background to-muted">
+    <!-- Decorative Elements -->
+    <div class="absolute left-1/4 top-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl"></div>
+    <div class="absolute right-1/4 bottom-10 h-64 w-64 rounded-full bg-accent/10 blur-3xl"></div>
+    
+    <!-- Animated Gold Accent Lines -->
+    <div class="absolute left-0 top-1/3 h-px w-1/4 bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse"></div>
+    <div class="absolute right-0 bottom-1/3 h-px w-1/3 bg-gradient-to-l from-transparent via-primary to-transparent animate-pulse" style="animation-delay: 1s;"></div>
+    
+    <!-- Large Decorative Number -->
+    <div class="absolute -right-20 top-1/2 -translate-y-1/2 text-[20rem] font-black text-foreground/[0.02] select-none pointer-events-none">
+      24/7
+    </div>
+    
+    <div class="container-custom relative">
+      <div class="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
+        <!-- Left: Big Stats -->
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-semibold text-primary">
+            <Icon name="lucide:crown" class="h-4 w-4" />
+            Why We're Different
+          </div>
+          
+          <h2 class="mt-6 font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
+            The <span class="text-primary">Royal</span><br />Standard
+          </h2>
+          
+          <p class="mt-6 text-xl text-muted-foreground leading-relaxed">
+            While others cut corners, we invest in what matters: <strong class="text-foreground">trained technicians, quality parts, and honest service.</strong>
+          </p>
+          
+          <!-- Big Stats Row -->
+          <div class="mt-10 grid grid-cols-3 gap-6">
+            <div class="text-center">
+              <div class="text-4xl font-black text-primary lg:text-5xl">15+</div>
+              <div class="mt-1 text-sm text-muted-foreground">Years</div>
+            </div>
+            <div class="text-center border-x border-border">
+              <div class="text-4xl font-black text-foreground lg:text-5xl">5K+</div>
+              <div class="mt-1 text-sm text-muted-foreground">Customers</div>
+            </div>
+            <div class="text-center">
+              <div class="text-4xl font-black text-primary lg:text-5xl">5.0</div>
+              <div class="mt-1 text-sm text-muted-foreground">Rating</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right: Benefits Cards -->
+        <div class="space-y-4">
+          {benefits.slice(0, 4).map((benefit: { title: string; description: string; icon?: string }) => (
+            <div class="group relative overflow-hidden rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
+              <div class="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 transition-opacity group-hover:opacity-100"></div>
+              <div class="relative flex items-center gap-4">
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/25">
+                  <Icon name={benefit.icon || 'lucide:check'} class="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-bold text-foreground">{benefit.title}</h3>
+                  <p class="mt-0.5 text-sm text-muted-foreground">{benefit.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          <!-- CTA Button -->
+          <a
+            href="/book/"
+            class="group mt-6 flex items-center justify-center gap-3 rounded-2xl bg-primary px-8 py-5 font-bold text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:shadow-primary/40 hover:scale-[1.02]"
+          >
+            <Icon name="lucide:calendar-plus" class="h-5 w-5" />
+            Get Your Free Quote Now
+            <Icon name="lucide:arrow-right" class="h-5 w-5 transition-transform group-hover:translate-x-1" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- TESTIMONIALS CAROUSEL (12 cards) -->
+  <!-- ============================================ -->
+  {serviceTestimonials.length > 0 && (
+    <ReviewsCarousel 
+      client:load
+      testimonials={serviceTestimonials}
+      title={`What Customers Say About Our ${service.data.title}`}
+      subtitle="Read verified reviews from satisfied customers who trusted us with their security needs."
+      className="bg-gradient-to-b from-background via-muted/50 to-background"
+    />
+  )}
+
+  <!-- ============================================ -->
+  <!-- FAQ SECTION -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="subtle" className="section-border-top">
+    <div class="grid gap-12 lg:grid-cols-5">
+      <!-- FAQ Content -->
+      <div class="lg:col-span-3">
+        <Badge client:load variant="secondary" className="mb-4">Your Questions Answered</Badge>
+        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+          Common Questions About {service.data.title}
+        </h2>
+        <p class="mt-4 text-lg text-muted-foreground">
+          <strong>We believe in transparency.</strong> Here are answers to questions we get most often—so you know exactly what to expect.</p>
+        
+        <div class="mt-8">
+          <Accordion client:load items={faqItems} />
+        </div>
+        
+        <div class="mt-8 rounded-2xl border border-border bg-card p-6">
+          <h3 class="font-semibold">Still have questions?</h3>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Our team is here to help. Contact us for personalized assistance with your {service.data.title.toLowerCase()} needs.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-3">
+            <a
+              href="/contact/"
+              class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
+              <Icon name="lucide:message-circle" class="h-4 w-4" />
+              Contact Us
+            </a>
+            <a
+              href={`tel:${siteConfig.contact.phone.href}`}
+              class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary"
+            >
+              <Icon name="lucide:phone" class="h-4 w-4" />
+              {siteConfig.contact.phone.display}
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sticky Sidebar -->
+      <div class="lg:col-span-2">
+        <StickySidebar 
+          client:load
+          currentService={service.slug}
+          showBookingCTA={true}
+          showTrustBadges={true}
+          showServiceAreas={true}
+        />
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================ -->
+  <!-- RELATED SERVICES -->
+  <!-- ============================================ -->
+  {relatedServices.length > 0 && (
+    <Section client:load size="lg" background="default">
+      <div class="mx-auto max-w-3xl text-center">
+        <Badge client:load variant="secondary" className="mb-4">More Services</Badge>
+        <h2 class="text-2xl font-bold tracking-tight sm:text-3xl">
+          Explore Our Other Services
+        </h2>
+        <p class="mt-4 text-muted-foreground">
+          We offer a complete range of professional locksmith services to meet all your security needs.
+        </p>
+      </div>
+      
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {relatedServices.map((relatedService) => {
+          // Related service config available if needed
+          return (
+            <a href={`/services/${relatedService.slug}/`} class="group">
+              <Card client:load variant="hover" padding="lg" className="h-full">
+                <CardContent>
+                  <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                    <Icon name={serviceIcons[relatedService.slug] || 'lucide:wrench'} class="h-7 w-7" />
+                  </div>
+                  <h3 class="text-xl font-semibold">{relatedService.data.title}</h3>
+                  <p class="mt-2 text-muted-foreground line-clamp-2">
+                    {relatedService.data.shortDescription || relatedService.data.description}
+                  </p>
+                  <span class="mt-4 inline-flex items-center gap-1 font-medium text-primary">
+                    Learn More
+                    <Icon name="lucide:arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </CardContent>
+              </Card>
+            </a>
+          );
+        })}
+      </div>
+    </Section>
+  )}
+
+  <!-- ============================================ -->
+  <!-- SERVICE AREAS with Interactive Map -->
+  <!-- ============================================ -->
+  <section class="relative overflow-hidden py-20 lg:py-28 bg-gradient-to-b from-background via-muted/30 to-background">
+    <!-- Decorative elements -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(236,164,19,0.05),transparent_70%)]"></div>
+    
+    <div class="container-custom relative">
+      <!-- Header -->
+      <div class="mb-12 text-center lg:mb-16">
+        <div class="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 px-5 py-2 text-sm font-medium text-primary backdrop-blur-sm">
+          <Icon name="lucide:map-pin" class="h-4 w-4" />
+          Service Coverage
+        </div>
+        <h2 class="mt-6 font-display text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+          {service.data.title} Across <span class="text-primary">{siteConfig.serviceArea.region}</span>
+        </h2>
+        <p class="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
+          Professional {service.data.title.toLowerCase()} available throughout Northern New Jersey. Click a location to explore local services.
+        </p>
+      </div>
+      
+      <!-- Map + Locations Grid -->
+      <div class="grid gap-8 lg:grid-cols-2">
+        <!-- Interactive Map -->
+        <div class="relative overflow-hidden rounded-3xl border border-border shadow-2xl">
+          <!-- Map Container -->
+          <div class="aspect-[4/3] w-full">
+            <iframe
+              src={`https://www.google.com/maps/embed/v1/place?key=${siteConfig.apiKeys.googleMaps || 'AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8'}&q=${encodeURIComponent(siteConfig.serviceArea.region + ', NJ')}&zoom=10&maptype=roadmap`}
+              class="h-full w-full border-0"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title={`${service.data.title} service areas map`}
+            ></iframe>
+          </div>
+          
+          <!-- Map Overlay Card -->
+          <div class="absolute bottom-4 left-4 right-4 rounded-2xl border border-border/50 bg-card/95 p-4 backdrop-blur-md shadow-xl">
+            <div class="flex items-center gap-3">
+              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground shadow-lg">
+                <Icon name="lucide:navigation" class="h-6 w-6" />
+              </div>
+              <div>
+                <p class="font-semibold text-foreground">Serving All of {siteConfig.serviceArea.region}</p>
+                <p class="text-sm text-muted-foreground">Serving {siteConfig.locations.length}+ locations across the region</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Locations Grid -->
+        <div>
+          <h3 class="mb-6 text-lg font-semibold text-foreground">Popular Service Areas</h3>
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {siteConfig.locations.slice(0, 12).map((loc) => (
+              <a
+                href={`/locations/${loc.slug}/`}
+                class="group flex items-center gap-2 rounded-xl border border-border bg-card p-3 transition-all hover:border-primary hover:bg-primary/5 hover:shadow-lg"
+              >
+                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                  <Icon name="lucide:map-pin" class="h-4 w-4" />
+                </div>
+                <span class="text-sm font-medium text-foreground group-hover:text-primary">{loc.name}</span>
+              </a>
+            ))}
+          </div>
+          
+          <!-- View All + Call CTA -->
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a
+              href="/locations/"
+              class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 font-medium transition-all hover:border-primary hover:text-primary"
+            >
+              View All {siteConfig.locations.length}+ Areas
+              <Icon name="lucide:arrow-right" class="h-4 w-4" />
+            </a>
+            <a
+              href={`tel:${siteConfig.contact.phone.href}`}
+              class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 font-medium text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:shadow-primary/40"
+            >
+              <Icon name="lucide:phone" class="h-4 w-4" />
+              Call for Service
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- FINAL CTA -->
+  <!-- ============================================ -->
+  <Section client:load size="xl" background="primary">
+    <div class="mx-auto max-w-4xl text-center">
+      <h2 class="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl lg:text-5xl">
+        Ready for Professional {service.data.title.replace(/\s*Services?$/i, '')} Service?
+      </h2>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-primary-foreground/80">
+        Contact us today for a free consultation and estimate. Our expert technicians are ready to help with all your {service.data.title.toLowerCase()} needs.
+      </p>
+      
+      <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="/book/"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-semibold text-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
+        >
+          <Icon name="lucide:calendar-plus" class="h-5 w-5" />
+          Book Service Now
+        </a>
+        <a
+          href={`tel:${siteConfig.contact.phone.href}`}
+          class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-white/10 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/20"
+        >
+          <Icon name="lucide:phone" class="h-5 w-5" />
+          {siteConfig.contact.phone.display}
+        </a>
+      </div>
+      
+      <p class="mt-6 text-sm text-primary-foreground/60">
+        Free estimates • Licensed & insured • Satisfaction guaranteed
+      </p>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+  
+  <!-- Floating Elements -->
+  <ScrollToTop client:load />
+  <PhoneCTA client:load position="bottom-left" />
+</BaseLayout>
+
+<style>
+  .bg-grid-pattern {
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+</style>

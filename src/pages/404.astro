@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import { Button } from '../components/ui';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="The page you're looking for doesn't exist or has been moved."
+  noindex={true}
+>
+  <Header slot="header" />
+
+  <section class="flex min-h-[60vh] items-center justify-center py-20">
+    <div class="container-custom text-center">
+      <div class="mx-auto max-w-md">
+        <div class="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-muted">
+          <Icon name="lucide:search-x" class="h-12 w-12 text-muted-foreground" />
+        </div>
+        
+        <h1 class="font-display text-4xl font-bold tracking-tight sm:text-5xl">
+          404
+        </h1>
+        
+        <p class="mt-4 text-xl text-muted-foreground">
+          Page Not Found
+        </p>
+        
+        <p class="mt-2 text-muted-foreground">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+        
+        <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <a href="/">
+            <Button client:load size="lg" className="gap-2">
+              <Icon name="lucide:home" class="h-5 w-5" />
+              Go Home
+            </Button>
+          </a>
+          <a href="/contact/">
+            <Button client:load variant="outline" size="lg" className="gap-2">
+              <Icon name="lucide:phone" class="h-5 w-5" />
+              Contact Us
+            </Button>
+          </a>
+        </div>
+        
+        <p class="mt-8 text-sm text-muted-foreground">
+          Need help? Call us at{' '}
+          <a href={`tel:${siteConfig.contact.phone.href}`} class="font-medium text-primary hover:underline">
+            {siteConfig.contact.phone.display}
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>

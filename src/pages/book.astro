@@ -1,0 +1,298 @@
+---
+/**
+ * Book Service Page
+ * 
+ * Comprehensive booking form with:
+ * - Service selection
+ * - Date/time preferences
+ * - Address autocomplete
+ * - reCAPTCHA protection
+ * - Clear process explanation
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Schema from '../components/common/Schema.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { Section, Badge, Card, CardContent, ServiceCard } from '../components/ui';
+import BookingForm from '../components/forms/BookingForm';
+import { ServiceCalculator } from '../components/widgets/ServiceCalculator';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+import { getPageImage } from '../config/image-registry';
+import { getLocalBusinessSchema } from '../utils/schema';
+
+const schemas = [
+  getLocalBusinessSchema(),
+];
+
+const breadcrumbItems = [
+  { label: 'Book Service', href: '/book/' },
+];
+
+const processSteps = [
+  {
+    step: 1,
+    icon: 'lucide:clipboard-list',
+    title: 'Submit Your Request',
+    description: 'Fill out the booking form with your service needs, preferred date, and contact information.',
+  },
+  {
+    step: 2,
+    icon: 'lucide:phone-call',
+    title: 'Confirmation Call',
+    description: 'Our team will contact you to confirm the appointment and discuss any specific requirements.',
+  },
+  {
+    step: 3,
+    icon: 'lucide:user-check',
+    title: 'Technician Arrives',
+    description: 'A licensed technician arrives at your location with all necessary equipment and tools.',
+  },
+  {
+    step: 4,
+    icon: 'lucide:search',
+    title: 'Free Assessment',
+    description: 'The technician inspects the situation and provides a detailed explanation of the work needed.',
+  },
+  {
+    step: 5,
+    icon: 'lucide:file-text',
+    title: 'Upfront Estimate',
+    description: 'You receive a clear, written estimate before any work begins. No hidden fees or surprises.',
+  },
+  {
+    step: 6,
+    icon: 'lucide:check-circle',
+    title: 'Service Completed',
+    description: 'Once approved, the technician completes the work to your satisfaction with quality guaranteed.',
+  },
+];
+---
+
+<BaseLayout
+  title="Book Locksmith Service | Free Estimates"
+  description={`Schedule locksmith service with ${siteConfig.name}. Book online for residential, commercial, automotive, or emergency locksmith services in ${siteConfig.serviceArea.region}. Free estimates.`}
+  ogImage={getPageImage('book').og}
+>
+  <!-- Google Maps API Script for Address Autocomplete -->
+  {siteConfig.apiKeys.googleMaps && (
+    <script
+      slot="head"
+      is:inline
+      async
+      defer
+      src={`https://maps.googleapis.com/maps/api/js?key=${siteConfig.apiKeys.googleMaps}&libraries=places&loading=async`}
+    ></script>
+  )}
+  
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950">
+    <div class="container-custom py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+      
+      <div class="mx-auto max-w-4xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          <Icon name="lucide:calendar-plus" class="mr-2 h-4 w-4" />
+          Schedule Service
+        </Badge>
+        
+        <h1 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          Book Your Locksmith Service
+        </h1>
+        
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+          Schedule a service appointment online. Our team will contact you to confirm and answer any questions. Free on-site estimates provided.
+        </p>
+      </div>
+    </div>
+    
+    <!-- Decorative elements -->
+    <div class="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
+    <div class="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-accent/5 blur-3xl"></div>
+  </section>
+
+  <!-- Main Content -->
+  <Section client:load size="lg" background="default">
+    <div class="grid gap-12 lg:grid-cols-5">
+      <!-- Booking Form -->
+      <div class="lg:col-span-3">
+        <Card client:load padding="lg">
+          <CardContent>
+            <div class="mb-6">
+              <h2 class="text-2xl font-bold">Request an Appointment</h2>
+              <p class="mt-2 text-muted-foreground">
+                Fill out the form below and we'll contact you to confirm your appointment.
+              </p>
+            </div>
+            
+            <BookingForm 
+              client:load 
+              recaptchaSiteKey={siteConfig.apiKeys.recaptchaSiteKey}
+              endpoint="/api/booking.php"
+            />
+          </CardContent>
+        </Card>
+      </div>
+      
+      <!-- Sidebar -->
+      <div class="lg:col-span-2">
+        <!-- Why Book With Us -->
+        <Card client:load padding="lg" className="mb-6">
+          <CardContent>
+            <h3 class="flex items-center gap-2 text-lg font-bold">
+              <Icon name="lucide:shield-check" class="h-5 w-5 text-primary" />
+              Why Book With Us
+            </h3>
+            
+            <ul class="mt-4 space-y-3">
+              {[
+                'Licensed, bonded, and insured technicians',
+                'Free on-site inspection and estimate',
+                'No obligation to proceed after estimate',
+                'Upfront pricing with no hidden fees',
+                'Quality workmanship guaranteed',
+                'Background-checked professionals',
+              ].map((item) => (
+                <li class="flex items-start gap-3">
+                  <Icon name="lucide:check" class="mt-0.5 h-5 w-5 shrink-0 text-success-500" />
+                  <span class="text-muted-foreground">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+        
+        <!-- Need Immediate Help -->
+        <Card client:load padding="lg" className="border-primary bg-primary/5">
+          <CardContent>
+            <h3 class="flex items-center gap-2 text-lg font-bold">
+              <Icon name="lucide:phone" class="h-5 w-5 text-primary" />
+              Need Immediate Help?
+            </h3>
+            
+            <p class="mt-2 text-muted-foreground">
+              For urgent locksmith needs, call us directly. Our team is available to assist you.
+            </p>
+            
+            <a
+              href={`tel:${siteConfig.contact.phone.href}`}
+              class="mt-4 flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <Icon name="lucide:phone" class="h-5 w-5" />
+              {siteConfig.contact.phone.display}
+            </a>
+            
+            <p class="mt-3 text-center text-sm text-muted-foreground">
+              {siteConfig.contact.hours}
+            </p>
+          </CardContent>
+        </Card>
+        
+        <!-- Pricing Estimator -->
+        <ServiceCalculator 
+          client:load
+          phone={siteConfig.contact.phone.display}
+          phoneHref={siteConfig.contact.phone.href}
+          className="mt-6"
+        />
+        
+        <!-- Service Areas -->
+        <Card client:load padding="lg" className="mt-6">
+          <CardContent>
+            <h3 class="flex items-center gap-2 text-lg font-bold">
+              <Icon name="lucide:map-pin" class="h-5 w-5 text-primary" />
+              Service Areas
+            </h3>
+            
+            <p class="mt-2 text-sm text-muted-foreground">
+              We serve {siteConfig.serviceArea.region} including:
+            </p>
+            
+            <div class="mt-3 flex flex-wrap gap-2">
+              {siteConfig.locations.slice(0, 6).map((location) => (
+                <a
+                  href={`/locations/${location.slug}/`}
+                  class="rounded-full border border-border bg-muted/50 px-3 py-1 text-sm transition-colors hover:border-primary hover:text-primary"
+                >
+                  {location.name}
+                </a>
+              ))}
+            </div>
+            
+            <a
+              href="/locations/"
+              class="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+            >
+              View all service areas
+              <Icon name="lucide:arrow-right" class="h-4 w-4" />
+            </a>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  </Section>
+
+  <!-- How It Works -->
+  <Section client:load size="lg" background="muted">
+    <div class="mx-auto max-w-3xl text-center">
+      <Badge client:load variant="secondary" className="mb-4">Our Process</Badge>
+      <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        How It Works
+      </h2>
+      <p class="mt-4 text-muted-foreground">
+        From booking to completion, here's what to expect when you schedule service with us.
+      </p>
+    </div>
+    
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {processSteps.map((step) => (
+        <div class="relative rounded-2xl border border-border bg-card p-6">
+          <!-- Step Number -->
+          <div class="absolute -top-3 left-6 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+            {step.step}
+          </div>
+          
+          <div class="mt-2">
+            <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name={step.icon} class="h-6 w-6" />
+            </div>
+            
+            <h3 class="text-lg font-semibold">{step.title}</h3>
+            <p class="mt-2 text-sm text-muted-foreground">{step.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Services Available -->
+  <Section client:load size="lg" background="default">
+    <div class="mx-auto max-w-3xl text-center">
+      <Badge client:load variant="secondary" className="mb-4">Services</Badge>
+      <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        Services You Can Book
+      </h2>
+      <p class="mt-4 text-muted-foreground">
+        We offer comprehensive locksmith services for all your security needs.
+      </p>
+    </div>
+    
+    <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {siteConfig.services.map((service) => (
+        <ServiceCard
+          client:load
+          title={service.name}
+          description={service.shortDescription}
+          iconName={service.icon}
+          href={`/services/${service.slug}/`}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

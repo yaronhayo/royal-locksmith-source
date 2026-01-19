@@ -1,0 +1,286 @@
+---
+/**
+ * Accessibility Policy Page
+ *
+ * Comprehensive accessibility statement with:
+ * - WCAG 2.1 AA compliance commitment
+ * - Accessibility features list
+ * - Contact information for accessibility issues
+ * - Third-party tool acknowledgments
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { Section, Badge } from '../components/ui';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+
+const breadcrumbItems = [{ label: 'Accessibility', href: '/accessibility/' }];
+
+const lastUpdated = 'December 2024';
+---
+
+<BaseLayout
+  title="Accessibility Policy"
+  description={`${siteConfig.name} is committed to ensuring digital accessibility for people with disabilities. Learn about our accessibility features and how to report issues.`}
+  noindex={false}
+>
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="mx-auto max-w-4xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          <Icon name="lucide:accessibility" class="mr-2 h-4 w-4" />
+          Accessibility
+        </Badge>
+
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          Accessibility Policy
+        </h1>
+
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+          Our commitment to making our website accessible to everyone.
+        </p>
+
+        <p class="mt-4 text-sm text-muted-foreground">
+          Last updated: {lastUpdated}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content -->
+  <Section client:load size="lg" background="default">
+    <div class="mx-auto max-w-4xl">
+      <div class="prose prose-lg max-w-none dark:prose-invert">
+        <h2>Our Commitment</h2>
+        <p>
+          {siteConfig.name} is committed to ensuring digital accessibility for people with disabilities.
+          We are continually improving the user experience for everyone and applying the relevant accessibility
+          standards to ensure we provide equal access to all users.
+        </p>
+
+        <h2>Conformance Status</h2>
+        <p>
+          We strive to conform to the <strong
+            >Web Content Accessibility Guidelines (WCAG) 2.1 Level AA</strong
+          >. These guidelines explain how to make web content more accessible for people with
+          disabilities and more user-friendly for everyone.
+        </p>
+        <p>
+          The guidelines have three levels of accessibility (A, AA, and AAA). We have chosen Level
+          AA as our target for this website.
+        </p>
+
+        <h2>Accessibility Features</h2>
+        <p>We have implemented the following accessibility features on our website:</p>
+
+        <div class="not-prose my-8 grid gap-4 sm:grid-cols-2">
+          {
+            [
+              {
+                icon: 'lucide:keyboard',
+                title: 'Keyboard Navigation',
+                description:
+                  'All functionality is accessible via keyboard for users who cannot use a mouse.',
+              },
+              {
+                icon: 'lucide:type',
+                title: 'Text Alternatives',
+                description: 'Images include descriptive alt text for screen reader users.',
+              },
+              {
+                icon: 'lucide:contrast',
+                title: 'Color Contrast',
+                description:
+                  'Text has sufficient color contrast against backgrounds for readability.',
+              },
+              {
+                icon: 'lucide:layout',
+                title: 'Consistent Navigation',
+                description: 'Navigation is consistent throughout the website for predictability.',
+              },
+              {
+                icon: 'lucide:heading',
+                title: 'Heading Structure',
+                description: 'Proper heading hierarchy helps users navigate content easily.',
+              },
+              {
+                icon: 'lucide:link',
+                title: 'Descriptive Links',
+                description: 'Link text clearly describes the destination or purpose.',
+              },
+              {
+                icon: 'lucide:form-input',
+                title: 'Form Labels',
+                description: 'All form fields have associated labels for screen readers.',
+              },
+              {
+                icon: 'lucide:focus',
+                title: 'Focus Indicators',
+                description: 'Visible focus indicators show which element is currently selected.',
+              },
+            ].map((feature) => (
+              <div class="flex items-start gap-4 rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-soft">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Icon name={feature.icon} class="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 class="font-display font-bold text-foreground">{feature.title}</h3>
+                  <p class="mt-1 text-sm text-muted-foreground">{feature.description}</p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+
+        <h2>Technologies Used</h2>
+        <p>
+          This website relies on the following technologies to work with the particular combination
+          of web browser and any assistive technologies or plugins installed on your computer:
+        </p>
+        <ul>
+          <li>HTML5</li>
+          <li>CSS3</li>
+          <li>JavaScript</li>
+          <li>WAI-ARIA (Web Accessibility Initiative - Accessible Rich Internet Applications)</li>
+        </ul>
+        <p>
+          These technologies are relied upon for conformance with the accessibility standards used.
+        </p>
+
+        <h2>Known Limitations</h2>
+        <p>
+          Despite our best efforts to ensure accessibility of our website, there may be some
+          limitations. Below is a description of known limitations and potential solutions:
+        </p>
+        <ul>
+          <li>
+            <strong>Third-party content:</strong> Some content provided by third parties (such as embedded
+            maps or social media feeds) may not be fully accessible. We work with our partners to improve
+            accessibility where possible.
+          </li>
+          <li>
+            <strong>PDF documents:</strong> Some older PDF documents may not be fully accessible. We are
+            working to remediate these documents or provide accessible alternatives upon request.
+          </li>
+          <li>
+            <strong>Video content:</strong> Some video content may not have captions. We are working to
+            add captions to all video content.
+          </li>
+        </ul>
+
+        <h2>Feedback and Contact Information</h2>
+        <p>
+          We welcome your feedback on the accessibility of our website. If you encounter
+          accessibility barriers or have suggestions for improvement, please contact us:
+        </p>
+
+        <div class="not-prose my-6 rounded-xl border border-border bg-muted/50 p-6">
+          <h3 class="mb-4 text-lg font-semibold">Accessibility Contact</h3>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3">
+              <Icon name="lucide:mail" class="h-5 w-5 text-primary" />
+              <span
+                >Email: <a
+                  href={`mailto:${siteConfig.contact.email}`}
+                  class="text-primary hover:underline">{siteConfig.contact.email}</a
+                ></span
+              >
+            </li>
+            <li class="flex items-center gap-3">
+              <Icon name="lucide:phone" class="h-5 w-5 text-primary" />
+              <span
+                >Phone: <a
+                  href={`tel:${siteConfig.contact.phone.href}`}
+                  class="text-primary hover:underline">{siteConfig.contact.phone.display}</a
+                ></span
+              >
+            </li>
+          </ul>
+          <p class="mt-4 text-sm text-muted-foreground">
+            We try to respond to accessibility feedback within 2 business days.
+          </p>
+        </div>
+
+        <h2>Compatibility with Browsers and Assistive Technology</h2>
+        <p>This website is designed to be compatible with the following assistive technologies:</p>
+        <ul>
+          <li>Screen readers (including JAWS, NVDA, VoiceOver, and TalkBack)</li>
+          <li>Screen magnification software</li>
+          <li>Speech recognition software</li>
+          <li>Keyboard-only navigation</li>
+        </ul>
+        <p>
+          The website is designed to be compatible with recent versions of the following browsers:
+        </p>
+        <ul>
+          <li>Google Chrome</li>
+          <li>Mozilla Firefox</li>
+          <li>Apple Safari</li>
+          <li>Microsoft Edge</li>
+        </ul>
+
+        <h2>Technical Specifications</h2>
+        <p>
+          Accessibility of this website relies on the following technologies to work with the
+          particular combination of web browser and any assistive technologies or plugins installed
+          on your computer:
+        </p>
+        <ul>
+          <li>HTML</li>
+          <li>WAI-ARIA</li>
+          <li>CSS</li>
+          <li>JavaScript</li>
+        </ul>
+
+        <h2>Assessment Approach</h2>
+        <p>
+          {siteConfig.name} assessed the accessibility of this website by the following approaches:
+        </p>
+        <ul>
+          <li>Self-evaluation using automated accessibility testing tools</li>
+          <li>Manual testing with keyboard navigation</li>
+          <li>Testing with screen readers</li>
+          <li>Review against WCAG 2.1 Level AA success criteria</li>
+        </ul>
+
+        <h2>Formal Complaints</h2>
+        <p>
+          If you are not satisfied with our response to your accessibility concern, you may escalate
+          your complaint to the relevant regulatory authority in your jurisdiction.
+        </p>
+
+        <h2>Continuous Improvement</h2>
+        <p>
+          We are committed to continuously improving the accessibility of our website. We regularly
+          review our website and make updates to improve accessibility. This accessibility statement
+          will be updated as we make improvements.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Quick Links -->
+  <Section client:load size="md" background="muted">
+    <div class="flex flex-wrap items-center justify-center gap-4">
+      <span class="text-sm text-muted-foreground">Related policies:</span>
+      <a href="/privacy/" class="text-sm text-primary hover:underline">Privacy Policy</a>
+      <span class="text-muted-foreground">•</span>
+      <a href="/terms/" class="text-sm text-primary hover:underline">Terms of Service</a>
+      <span class="text-muted-foreground">•</span>
+      <a href="/contact/" class="text-sm text-primary hover:underline">Contact Us</a>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

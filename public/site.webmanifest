@@ -1,0 +1,27 @@
+{
+  "name": "Royal Locksmith",
+  "short_name": "Royal Locksmith",
+  "description": "Professional locksmith services for residential, commercial, and automotive needs in North Bergen, NJ and Hudson County.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#181611",
+  "theme_color": "#eca413",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

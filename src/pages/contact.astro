@@ -1,0 +1,261 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Schema from '../components/common/Schema.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { Section, Card, CardContent, Badge } from '../components/ui';
+import ContactForm from '../components/forms/ContactForm';
+import { ServiceAreaMap } from '../components/maps';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+import { getPageImage } from '../config/image-registry';
+import { getLocalBusinessSchema, getOrganizationSchema, getFAQSchema } from '../utils/schema';
+
+// FAQ data for schema
+const faqs = [
+  {
+    question: 'Do you provide free estimates?',
+    answer: 'Yes, we provide free on-site inspections and estimates for all services. Our technician will assess your needs and provide a detailed quote before any work begins.',
+  },
+  {
+    question: 'What areas do you serve?',
+    answer: `We serve ${siteConfig.serviceArea.region} and surrounding areas. Visit our Service Areas page to see if we cover your location, or contact us to confirm.`,
+  },
+  {
+    question: 'Are you licensed and insured?',
+    answer: `Yes, ${siteConfig.name} is fully licensed, insured, and bonded. All our technicians are background-checked and certified professionals.`,
+  },
+];
+
+const schemas = [
+  getLocalBusinessSchema(),
+  getOrganizationSchema(),
+  getFAQSchema(faqs),
+];
+
+const breadcrumbItems = [
+  { label: 'Contact', href: '/contact/' },
+];
+
+// Prepare service area data for map
+const serviceAreas = siteConfig.locations.map(loc => ({
+  name: loc.name,
+  coordinates: loc.coordinates,
+}));
+---
+
+<BaseLayout
+  title="Free Locksmith Estimates | NJ"
+  description={`Contact ${siteConfig.name} for professional locksmith services in ${siteConfig.serviceArea.region}. Call us or request a free estimate online. Available 24/7.`}
+  ogImage={getPageImage('contact').og}
+>
+  <!-- Google Maps API Script -->
+  {siteConfig.apiKeys.googleMaps && (
+    <script
+      slot="head"
+      is:inline
+      async
+      defer
+      src={`https://maps.googleapis.com/maps/api/js?key=${siteConfig.apiKeys.googleMaps}&libraries=places&loading=async`}
+    />
+  )}
+  
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+      <img 
+        src={getPageImage('contact').hero}
+        alt="Contact Royal Locksmith for professional locksmith services in Northern New Jersey"
+        class="h-full w-full object-cover opacity-20"
+      />
+      <div class="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/80"></div>
+    </div>
+    
+    <div class="container-custom relative py-16 lg:py-24">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+      
+      <div class="mx-auto max-w-4xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          Get In Touch
+        </Badge>
+        
+        <h1 class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          Contact {siteConfig.name}
+        </h1>
+        
+        <p class="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground lg:text-xl">
+          Have questions or need locksmith services? Contact us today for a free on-site inspection and estimate. Our team is ready to help.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <Section client:load size="lg" background="default">
+    <div class="grid gap-12 lg:grid-cols-2">
+      <!-- Contact Info -->
+      <div>
+        <h2 class="text-2xl font-bold">Get in Touch</h2>
+        <p class="mt-4 text-muted-foreground">
+          We're here to help with all your locksmith needs. Reach out by phone, email, or fill out the form and we'll get back to you promptly.
+        </p>
+        
+        <div class="mt-8 space-y-6">
+          <!-- Phone -->
+          <div class="flex items-start gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name="lucide:phone" class="h-6 w-6" />
+            </div>
+            <div>
+              <h3 class="font-semibold">Phone</h3>
+              <a
+                href={`tel:${siteConfig.contact.phone.href}`}
+                class="mt-1 text-lg font-medium text-primary hover:underline"
+              >
+                {siteConfig.contact.phone.display}
+              </a>
+              <p class="mt-1 text-sm text-muted-foreground">{siteConfig.contact.hours}</p>
+            </div>
+          </div>
+          
+          <!-- Email -->
+          <div class="flex items-start gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name="lucide:mail" class="h-6 w-6" />
+            </div>
+            <div>
+              <h3 class="font-semibold">Email</h3>
+              <a
+                href={`mailto:${siteConfig.contact.email}`}
+                class="mt-1 text-primary hover:underline"
+              >
+                {siteConfig.contact.email}
+              </a>
+              <p class="mt-1 text-sm text-muted-foreground">We'll respond within 24 hours</p>
+            </div>
+          </div>
+          
+          <!-- Service Area -->
+          <div class="flex items-start gap-4">
+            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Icon name="lucide:map-pin" class="h-6 w-6" />
+            </div>
+            <div>
+              <h3 class="font-semibold">Service Area</h3>
+              <p class="mt-1">
+                {siteConfig.serviceArea.region}, {siteConfig.serviceArea.stateFullName}
+              </p>
+              <a href="/locations/" class="mt-1 text-sm text-primary hover:underline">
+                View all service areas
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Trust Badges -->
+        <div class="mt-8 rounded-2xl border border-border bg-muted/30 p-6">
+          <h3 class="font-semibold">Why Choose Us</h3>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              { icon: 'lucide:shield-check', label: 'Licensed & Insured' },
+              { icon: 'lucide:award', label: `${siteConfig.trustSignals.yearsInBusiness}+ Years Experience` },
+              { icon: 'lucide:file-text', label: 'Free Estimates' },
+              { icon: 'lucide:star', label: 'Quality Guaranteed' },
+            ].map((item) => (
+              <div class="flex items-center gap-2">
+                <Icon name={item.icon} class="h-5 w-5 text-success-500" />
+                <span class="text-sm">{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contact Form -->
+      <div>
+        <Card client:load padding="lg">
+          <CardContent>
+            <h2 class="text-xl font-bold">Request a Free Estimate</h2>
+            <p class="mt-2 text-sm text-muted-foreground">
+              Fill out the form below and we'll contact you to schedule a free on-site inspection.
+            </p>
+            
+            <div class="mt-6">
+              <ContactForm 
+                client:load 
+                recaptchaSiteKey={siteConfig.apiKeys.recaptchaSiteKey}
+                endpoint={siteConfig.forms.contactEndpoint}
+                showAddress={siteConfig.forms.enableAddressAutocomplete}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Service Area Map Section -->
+  {siteConfig.features.enableServiceAreaMap && siteConfig.apiKeys.googleMaps && (
+    <Section client:load size="lg" background="muted">
+      <div class="mx-auto max-w-3xl text-center">
+        <Badge client:load variant="secondary" className="mb-4">Our Coverage</Badge>
+        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+          Service Area Map
+        </h2>
+        <p class="mt-4 text-muted-foreground">
+          We proudly serve {siteConfig.serviceArea.region} and surrounding communities.
+        </p>
+      </div>
+      
+      <div class="mt-12">
+        <ServiceAreaMap
+          client:load
+          apiKey={siteConfig.apiKeys.googleMaps}
+          center={siteConfig.serviceArea.coordinates}
+          zoom={10}
+          serviceAreas={serviceAreas}
+          height="450px"
+          className="shadow-lg"
+        />
+      </div>
+      
+      <!-- Location List -->
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        {siteConfig.locations.map((location) => (
+          <a
+            href={`/locations/${location.slug}/`}
+            class="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+          >
+            {location.name}
+          </a>
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <!-- FAQ Section -->
+  <Section client:load size="lg" background={siteConfig.features.enableServiceAreaMap ? 'default' : 'muted'}>
+    <div class="mx-auto max-w-3xl text-center">
+      <Badge client:load variant="secondary" className="mb-4">FAQ</Badge>
+      <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        Common Questions
+      </h2>
+    </div>
+    
+    <div class="mx-auto mt-12 max-w-3xl space-y-4">
+      {faqs.map((faq) => (
+        <div class="rounded-xl border border-border bg-card p-6">
+          <h3 class="font-semibold">{faq.question}</h3>
+          <p class="mt-2 text-muted-foreground">{faq.answer}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

@@ -1,0 +1,52 @@
+# Royal Locksmith - LLMs.txt
+# https://royallocksmithnj.com/llms.txt
+# This file provides context for AI/LLM systems about this website.
+
+## About Royal Locksmith
+
+Royal Locksmith is a professional locksmith service company serving Northern New Jersey, with headquarters in North Bergen, NJ. We provide 24/7 mobile locksmith services for residential, commercial, and automotive needs throughout Hudson County and surrounding areas.
+
+## Key Services
+
+- **Residential Locksmith**: Lock installation, repair, rekeying, smart locks, home security
+- **Commercial Locksmith**: Access control, master key systems, business security, safe services
+- **Automotive Locksmith**: Car lockouts, key replacement, transponder programming, ignition repair
+- **Emergency Services**: 24/7 lockout assistance, emergency lock changes, urgent security needs
+
+## Service Areas
+
+We serve 22 cities across Northern New Jersey including:
+- North Bergen (Headquarters)
+- Jersey City
+- Hoboken
+- Union City
+- West New York
+- Secaucus
+- Bayonne
+- Weehawken
+- Hackensack
+- Fort Lee
+- Englewood
+- Paramus
+- And more...
+
+## Business Information
+
+- **License Number**: 34LX00010800
+- **Service Area**: Hudson County, Bergen County, Essex County, Passaic County, Union County
+- **Type**: Service Area Business (Mobile - No Storefront)
+- **Hours**: Available 7 days a week
+
+## Contact
+
+- **Website**: https://royallocksmithnj.com
+- **Phone**: Available on website
+- **Email**: info@royallocksmithnj.com
+
+## Important Notes
+
+- We are a licensed and insured locksmith company
+- All technicians are background-checked and certified
+- We provide free on-site estimates with no obligation
+- We do NOT have a physical storefront location (mobile service only)
+- We do NOT guarantee response times or ETAs

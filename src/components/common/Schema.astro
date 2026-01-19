@@ -1,0 +1,21 @@
+---
+/**
+ * Schema Component
+ *
+ * Injects JSON-LD structured data into the page head.
+ * Accepts either pre-stringified JSON or objects that will be stringified.
+ */
+interface Props {
+  schema: string | object | (string | object)[];
+}
+
+const { schema } = Astro.props;
+
+// Handle both single schema and array of schemas
+const schemas = Array.isArray(schema) ? schema : [schema];
+
+// Convert objects to JSON strings
+const jsonStrings = schemas.map((s) => (typeof s === 'string' ? s : JSON.stringify(s)));
+---
+
+{jsonStrings.map((s) => <script is:inline type="application/ld+json" set:html={s} />)}

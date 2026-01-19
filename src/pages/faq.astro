@@ -1,0 +1,181 @@
+---
+/**
+ * FAQ Page
+ *
+ * Comprehensive frequently asked questions page with:
+ * - Categorized FAQ sections (General + Location + Service FAQs)
+ * - FAQ schema for rich results
+ * - Progressive reveal with "See More" buttons
+ * - Internal linking for SEO
+ */
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Schema from '../components/common/Schema.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { Section, Badge, FAQCategorySection } from '../components/ui';
+import { Icon } from 'astro-icon/components';
+import { siteConfig } from '../config/site.config';
+import { getPageImage } from '../config/image-registry';
+import { getFullFAQCategories } from '../config/faq.data';
+import { getFAQSchema } from '../utils/schema';
+
+// Get FAQs from locations and services collections
+const allLocations = await getCollection('locations', ({ data }) => !data.draft);
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+
+// Extract FAQs from locations (deduplicate by question)
+const locationFaqs = allLocations
+  .flatMap((loc) =>
+    (loc.data.faqs || []).map((faq) => ({
+      question: faq.question,
+      answer: faq.answer,
+    }))
+  )
+  .filter((faq, index, self) => index === self.findIndex((f) => f.question === faq.question));
+
+// Extract FAQs from services (deduplicate by question)
+const serviceFaqs = allServices
+  .flatMap((svc) =>
+    (svc.data.faqs || []).map((faq) => ({
+      question: faq.question,
+      answer: faq.answer,
+    }))
+  )
+  .filter((faq, index, self) => index === self.findIndex((f) => f.question === faq.question));
+
+// Get full FAQ categories including dynamic ones
+const fullFaqCategories = getFullFAQCategories(locationFaqs, serviceFaqs);
+
+// Flatten all FAQs for schema
+const allFaqs = fullFaqCategories.flatMap((category) => category.faqs);
+
+// Generate schemas
+const schemas = [getFAQSchema(allFaqs)];
+
+// Breadcrumb items
+const breadcrumbItems = [{ label: 'FAQ', href: '/faq/' }];
+---
+
+<BaseLayout
+  title="Locksmith FAQ | Common Questions Answered"
+  description={`Find answers to common questions about our locksmith services. Learn about residential, commercial, automotive, and emergency locksmith solutions in ${siteConfig.serviceArea.region}.`}
+  ogImage={getPageImage('faq').og}
+>
+  <Schema slot="head" schema={schemas} />
+  <Header slot="header" />
+
+  <!-- Hero Section -->
+  <section
+    class="relative overflow-hidden bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950"
+  >
+    <div class="container-custom py-12 lg:py-20">
+      <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+      <div class="mx-auto max-w-3xl text-center">
+        <Badge client:load variant="primary" size="lg" className="mb-4">
+          <Icon name="lucide:help-circle" class="mr-2 h-4 w-4" />
+          Help Center
+        </Badge>
+
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          Frequently Asked Questions
+        </h1>
+
+        <p class="mt-6 text-lg text-muted-foreground lg:text-xl">
+          Find answers to common questions about our locksmith services. Can't find what you're
+          looking for? Contact us directly.
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-4">
+          <a
+            href="/contact/"
+            class="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          >
+            <Icon name="lucide:message-circle" class="h-5 w-5" />
+            Contact Us
+          </a>
+          <a
+            href={`tel:${siteConfig.contact.phone.href}`}
+            class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 font-semibold transition-colors hover:border-primary hover:text-primary"
+          >
+            <Icon name="lucide:phone" class="h-5 w-5" />
+            {siteConfig.contact.phone.display}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Navigation -->
+  <Section client:load size="sm" background="muted">
+    <div class="flex flex-wrap justify-center gap-3">
+      {
+        fullFaqCategories.map((category, index) => (
+          <a
+            href={`#category-${index}`}
+            class="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+          >
+            <Icon name={category.icon} class="h-4 w-4" />
+            {category.title}
+          </a>
+        ))
+      }
+    </div>
+  </Section>
+
+  <!-- FAQ Categories with Progressive Reveal -->
+  {
+    fullFaqCategories.map((category, categoryIndex) => (
+      <FAQCategorySection
+        client:visible
+        categoryIndex={categoryIndex}
+        title={category.title}
+        iconName={category.icon}
+        faqs={category.faqs}
+        itemsPerPage={8}
+        background={categoryIndex % 2 === 0 ? 'default' : 'muted'}
+      />
+    ))
+  }
+
+  <!-- CTA Section -->
+  <Section client:load size="lg" background="primary" className="relative overflow-hidden">
+    <!-- Decorative background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-900 to-primary-950 opacity-10">
+    </div>
+
+    <div class="relative z-10 mx-auto max-w-4xl text-center">
+      <h2
+        class="font-display text-3xl font-bold tracking-tight text-primary-foreground text-white sm:text-4xl"
+      >
+        Still Have Questions?
+      </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-primary-foreground/90">
+        Our team is here to help. Contact us for personalized assistance with your locksmith needs.
+      </p>
+
+      <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          href="/contact/"
+          class="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-8 py-4 font-bold text-primary shadow-xl transition-all hover:scale-105 hover:bg-white/90 active:scale-95"
+        >
+          <Icon name="lucide:message-circle" class="h-5 w-5" />
+          Contact Us
+        </a>
+        <a
+          href={`tel:${siteConfig.contact.phone.href}`}
+          class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-white/30 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur-md transition-all hover:bg-white/20"
+        >
+          <Icon name="lucide:phone" class="h-5 w-5" />
+          {siteConfig.contact.phone.display}
+        </a>
+      </div>
+    </div>
+  </Section>
+
+  <Footer slot="footer" />
+</BaseLayout>

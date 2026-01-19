@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { siteConfig } from '../config/site.config';
+
+const breadcrumbItems = [{ label: 'Terms of Service', href: '/terms/' }];
+
+const lastUpdated = 'January 1, 2025';
+---
+
+<BaseLayout
+  title="Terms of Service"
+  description={`Terms of Service for ${siteConfig.name}. Read our terms and conditions for using our locksmith services.`}
+  noindex={false}
+>
+  <Header slot="header" />
+
+  <section class="relative bg-background py-16 md:py-24 lg:py-32">
+    <div class="container-custom">
+      <div class="mx-auto max-w-4xl">
+        <Breadcrumbs items={breadcrumbItems} className="mb-6" />
+
+        <h1
+          class="font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl"
+        >
+          Terms of Service
+        </h1>
+
+        <p class="mt-4 text-muted-foreground">
+          Last updated: {lastUpdated}
+        </p>
+
+        <div class="mt-10 space-y-8">
+          <!-- Agreement to Terms -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Agreement to Terms
+            </h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              By accessing or using the services provided by {siteConfig.name}, you agree to be
+              bound by these Terms of Service. If you do not agree to these terms, please do not use
+              our services.
+            </p>
+          </div>
+
+          <!-- Services -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">Services</h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              {siteConfig.name} provides professional locksmith services including, but not limited to,
+              residential, commercial, and automotive lock services. All services are subject to availability
+              and may vary by location.
+            </p>
+          </div>
+
+          <!-- Service Estimates -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Service Estimates
+            </h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              We provide free on-site inspections and estimates for our services. Estimates are
+              based on the information available at the time of assessment and may be subject to
+              change if additional work is required. We will communicate any changes before
+              proceeding with additional work.
+            </p>
+          </div>
+
+          <!-- Payment -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">Payment</h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              Payment is due upon completion of services unless otherwise agreed in writing. We
+              accept various forms of payment including cash, credit cards, and checks. Prices are
+              subject to change without notice.
+            </p>
+          </div>
+
+          <!-- Warranty -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">Warranty</h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              We stand behind our work and offer warranties on parts and labor as specified at the
+              time of service. Warranty terms may vary by service type and will be communicated to
+              you upon completion of work.
+            </p>
+          </div>
+
+          <!-- Limitation of Liability -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Limitation of Liability
+            </h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              To the fullest extent permitted by law, {siteConfig.name} shall not be liable for any indirect,
+              incidental, special, consequential, or punitive damages arising out of or related to your
+              use of our services.
+            </p>
+          </div>
+
+          <!-- Intellectual Property -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Intellectual Property
+            </h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              All content on this website, including text, graphics, logos, and images, is the
+              property of {siteConfig.name} and is protected by copyright and other intellectual property
+              laws.
+            </p>
+          </div>
+
+          <!-- Governing Law -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Governing Law
+            </h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              These Terms of Service shall be governed by and construed in accordance with the laws
+              of the State of {siteConfig.serviceArea.stateFullName}, without regard to its conflict
+              of law provisions.
+            </p>
+          </div>
+
+          <!-- Changes to Terms -->
+          <div class="rounded-2xl border border-border bg-card p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Changes to Terms
+            </h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              We reserve the right to modify these Terms of Service at any time. Changes will be
+              effective immediately upon posting to our website. Your continued use of our services
+              after any changes constitutes acceptance of the new terms.
+            </p>
+          </div>
+
+          <!-- Contact Us -->
+          <div class="rounded-2xl border border-primary/30 bg-primary/5 p-6 lg:p-8">
+            <h2 class="font-display text-xl font-bold text-foreground sm:text-2xl">Contact Us</h2>
+            <p class="mt-4 leading-relaxed text-muted-foreground">
+              If you have questions about these Terms of Service, please contact us:
+            </p>
+            <ul class="mt-4 space-y-2 text-muted-foreground">
+              <li>
+                <strong class="text-foreground">Email:</strong>{' '}
+                <a href={`mailto:${siteConfig.contact.email}`} class="text-primary hover:underline"
+                  >{siteConfig.contact.email}</a
+                >
+              </li>
+              <li>
+                <strong class="text-foreground">Phone:</strong>{' '}
+                <a
+                  href={`tel:${siteConfig.contact.phone.href}`}
+                  class="text-primary hover:underline">{siteConfig.contact.phone.display}</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Footer slot="footer" />
+</BaseLayout>
