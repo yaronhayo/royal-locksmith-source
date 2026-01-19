@@ -1,6 +1,14 @@
 ---
 title: "Car Key Replacement Cost Guide: What to Expect in 2026"
 description: "Complete breakdown of car key replacement costs by type. Learn the difference between basic keys, transponder keys, and smart fobs, plus tips to save money."
+metaTitle: "Car Key Replacement Cost 2026 | Prices by Key Type"
+metaDescription: "How much does car key replacement cost in 2026? Get pricing for transponder keys, smart fobs & basic keys. Save 30-50% vs dealership with mobile locksmith."
+focusKeyword: "car key replacement cost"
+secondaryKeywords:
+  - "transponder key replacement price"
+  - "smart key fob replacement NJ"
+  - "how much to replace car key"
+  - "locksmith vs dealer car key cost"
 author: "Royal Locksmith Team"
 publishedAt: "2026-01-06"
 category: "Automotive"

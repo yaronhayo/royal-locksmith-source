@@ -1,5 +1,5 @@
 # Royal Locksmith - LLMs.txt
-# https://royallocksmithnj.com/llms.txt
+# https://www.royallocksmithnj.com/llms.txt
 # This file provides context for AI/LLM systems about this website.
 
 ## About Royal Locksmith
@@ -39,7 +39,7 @@ We serve 22 cities across Northern New Jersey including:
 
 ## Contact
 
-- **Website**: https://royallocksmithnj.com
+- **Website**: https://www.royallocksmithnj.com
 - **Phone**: Available on website
 - **Email**: info@royallocksmithnj.com
 

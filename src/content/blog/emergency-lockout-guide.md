@@ -1,6 +1,14 @@
 ---
 title: "What to Do When You're Locked Out: A Complete Emergency Guide"
 description: "Step-by-step guide for handling home, car, or business lockouts safely and efficiently. Learn what to do immediately, how to choose a reliable locksmith, and tips to prevent future lockouts."
+metaTitle: "Locked Out? What to Do Now | Emergency Lockout Guide"
+metaDescription: "Locked out of your home, car, or office? Follow this step-by-step emergency guide. Learn what NOT to do & how to find a trustworthy NJ locksmith fast."
+focusKeyword: "locked out what to do"
+secondaryKeywords:
+  - "emergency lockout help NJ"
+  - "locked out of house at night"
+  - "car lockout what to do"
+  - "how to get into locked house"
 author: "Royal Locksmith Team"
 publishedAt: "2026-01-10"
 category: "Emergency Tips"

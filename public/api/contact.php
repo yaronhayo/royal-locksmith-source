@@ -26,7 +26,7 @@ if (defined('ALLOWED_ORIGINS') && in_array($origin, ALLOWED_ORIGINS)) {
 } elseif (defined('ALLOWED_ORIGINS') && count(ALLOWED_ORIGINS) > 0) {
     header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGINS[0]);
 } else {
-    header('Access-Control-Allow-Origin: https://royallocksmithnj.com');
+    header('Access-Control-Allow-Origin: https://www.royallocksmithnj.com');
 }
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');

@@ -1,5 +1,5 @@
 # Robots.txt for Royal Locksmith
-# https://royallocksmithnj.com/robots.txt
+# https://www.royallocksmithnj.com/robots.txt
 
 # Allow all standard crawlers
 User-agent: *

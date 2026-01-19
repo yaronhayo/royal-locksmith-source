@@ -1,6 +1,14 @@
 ---
 title: "Business Security Checklist: Protect Your Commercial Property"
 description: "Essential security checklist for business owners. Covers access control, employee protocols, alarm systems, and locksmith services to safeguard your commercial property."
+metaTitle: "Business Security Checklist 2026 | Commercial Property Protection"
+metaDescription: "Free commercial security checklist for NJ businesses. Cover access control, master keys, alarms & employee protocols. Prevent break-ins with expert tips."
+focusKeyword: "business security checklist"
+secondaryKeywords:
+  - "commercial property security NJ"
+  - "office security checklist"
+  - "business break-in prevention"
+  - "commercial locksmith security audit"
 author: "Royal Locksmith Team"
 publishedAt: "2026-01-04"
 category: "Commercial Security"

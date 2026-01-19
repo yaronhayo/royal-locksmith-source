@@ -26,6 +26,7 @@ import { ScrollToTop } from '../../components/common/ScrollToTop';
 import { PhoneCTA } from '../../components/widgets/PhoneCTA';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../../config/site.config';
+import { getBreadcrumbSchema } from '../../utils/schema';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -94,7 +95,13 @@ const articleSchema = {
   },
 };
 
-const schemas = [articleSchema];
+const schemas = [
+  articleSchema,
+  JSON.parse(getBreadcrumbSchema([
+    { label: 'Blog', href: '/blog/' },
+    { label: post.data.title, href: `/blog/${post.slug}/` },
+  ])),
+];
 
 const breadcrumbItems = [
   { label: 'Blog', href: '/blog/' },

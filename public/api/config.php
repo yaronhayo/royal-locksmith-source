@@ -46,7 +46,7 @@ define('COMPANY_PHONE', '(551) 292-8090');
 define('COMPANY_EMAIL', 'info@royallocksmithnj.com');
 
 /** Website URL */
-define('WEBSITE_URL', 'https://royallocksmithnj.com');
+define('WEBSITE_URL', 'https://www.royallocksmithnj.com');
 
 // =============================================================================
 // EMAIL RECIPIENTS
@@ -102,6 +102,5 @@ define('ENABLE_LOGGING', true);
  * Update with your actual domain(s)
  */
 define('ALLOWED_ORIGINS', [
-    'https://royallocksmithnj.com',
     'https://www.royallocksmithnj.com',
 ]);

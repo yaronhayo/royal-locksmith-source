@@ -31,7 +31,7 @@ import { ReviewsCarousel } from '../../components/widgets/ReviewsCarousel';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../../config/site.config';
 import { getServiceImage } from '../../config/image-registry';
-import { getServiceSchema, getFAQSchema, getLocalBusinessSchema } from '../../utils/schema';
+import { getServiceSchema, getFAQSchema, getLocalBusinessSchema, getBreadcrumbSchema, getHowToSchema } from '../../utils/schema';
 
 export async function getStaticPaths() {
   const services = await getCollection('services', ({ data }) => !data.draft);
@@ -107,11 +107,32 @@ const faqItems = serviceFAQ.map((faq, index) => ({
   content: faq.answer,
 }));
 
-// Generate schemas
+// Process steps (customize per service in content)
+const processSteps = service.data.process || [
+  { step: 1, title: 'Contact Us', description: 'Reach out via phone or our online form to describe your needs.', icon: 'lucide:phone' },
+  { step: 2, title: 'Free Assessment', description: 'Our technician arrives to evaluate your situation and discuss options.', icon: 'lucide:clipboard-check' },
+  { step: 3, title: 'Detailed Quote', description: 'Receive a transparent, no-obligation estimate before any work begins.', icon: 'lucide:file-text' },
+  { step: 4, title: 'Expert Service', description: 'Our licensed technician completes the work to the highest standards.', icon: 'lucide:wrench' },
+  { step: 5, title: 'Quality Check', description: 'We ensure everything works perfectly and answer any questions.', icon: 'lucide:check-circle' },
+];
+
+// Generate schemas (after processSteps so HowTo can use them)
 const schemas = [
   getLocalBusinessSchema(),
   getServiceSchema(service.data.title, service.data.description),
   getFAQSchema(serviceFAQ),
+  getBreadcrumbSchema([
+    { label: 'Services', href: '/services/' },
+    { label: service.data.title, href: `/services/${service.slug}/` },
+  ]),
+  getHowToSchema(
+    `How to Get ${service.data.title}`,
+    `Step-by-step guide to getting professional ${service.data.title.toLowerCase()} from ${siteConfig.name}`,
+    processSteps.map(step => ({
+      name: step.title,
+      text: step.description,
+    }))
+  ),
 ];
 
 // Breadcrumb items
@@ -127,15 +148,6 @@ const serviceIcons: Record<string, string> = {
   automotive: 'lucide:car',
   emergency: 'lucide:alert-triangle',
 };
-
-// Process steps (customize per service in content)
-const processSteps = service.data.process || [
-  { step: 1, title: 'Contact Us', description: 'Reach out via phone or our online form to describe your needs.', icon: 'lucide:phone' },
-  { step: 2, title: 'Free Assessment', description: 'Our technician arrives to evaluate your situation and discuss options.', icon: 'lucide:clipboard-check' },
-  { step: 3, title: 'Detailed Quote', description: 'Receive a transparent, no-obligation estimate before any work begins.', icon: 'lucide:file-text' },
-  { step: 4, title: 'Expert Service', description: 'Our licensed technician completes the work to the highest standards.', icon: 'lucide:wrench' },
-  { step: 5, title: 'Quality Check', description: 'We ensure everything works perfectly and answer any questions.', icon: 'lucide:check-circle' },
-];
 
 // Benefits (customize per service in content)
 const benefits = service.data.benefits || [

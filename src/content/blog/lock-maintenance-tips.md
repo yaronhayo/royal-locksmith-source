@@ -1,6 +1,14 @@
 ---
 title: "Lock Maintenance Tips: Keep Your Locks Working Like New"
 description: "Simple maintenance tips to extend the life of your locks and prevent lockouts. Learn proper lubrication, cleaning, and when to call a professional."
+metaTitle: "Lock Maintenance Tips | Extend Your Lock's Lifespan"
+metaDescription: "Keep locks working smoothly with these pro maintenance tips. Learn what lubricant to use (not WD-40!), how often to service locks & when to call a locksmith."
+focusKeyword: "lock maintenance tips"
+secondaryKeywords:
+  - "how to lubricate door locks"
+  - "lock care and maintenance"
+  - "stuck lock fix DIY"
+  - "door lock lubrication guide"
 author: "Royal Locksmith Team"
 publishedAt: "2025-12-28"
 category: "Maintenance"

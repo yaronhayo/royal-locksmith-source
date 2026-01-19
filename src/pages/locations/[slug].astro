@@ -31,7 +31,7 @@ import { ReviewsCarousel } from '../../components/widgets/ReviewsCarousel';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../../config/site.config';
 import { getLocationImage } from '../../config/image-registry';
-import { getLocalBusinessSchema, getFAQSchema } from '../../utils/schema';
+import { getLocalBusinessSchema, getFAQSchema, getBreadcrumbSchema } from '../../utils/schema';
 
 export async function getStaticPaths() {
   const locations = await getCollection('locations', ({ data }) => !data.draft);
@@ -113,6 +113,10 @@ const faqItems = locationFAQ.map((faq: { question: string; answer: string }, ind
 const schemas = [
   getLocalBusinessSchema(),
   getFAQSchema(locationFAQ),
+  getBreadcrumbSchema([
+    { label: 'Service Areas', href: '/locations/' },
+    { label: location.data.name, href: `/locations/${location.slug}/` },
+  ]),
 ];
 
 // Breadcrumb items
