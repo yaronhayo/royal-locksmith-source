@@ -8,65 +8,66 @@ import { siteConfig } from '../config/site.config';
 ---
 
 <BaseLayout
-  title="Page Not Found | Locked Out of This Page"
-  description="Oops! This page seems to be locked. Let our expert locksmiths help you find your way."
+  title="Server Error | Our Lock Jammed"
+  description="Something went wrong on our end. Our technicians are working on it."
   noindex={true}
 >
   <Header slot="header" />
 
-  <section class="flex min-h-[70vh] items-center justify-center bg-gradient-to-br from-primary-50 via-background to-accent-50 py-20 dark:from-primary-950 dark:via-background dark:to-accent-950">
+  <section class="flex min-h-[70vh] items-center justify-center bg-gradient-to-br from-error-50 via-background to-warning-50 py-20 dark:from-error-950 dark:via-background dark:to-warning-950">
     <div class="container-custom text-center">
       <div class="mx-auto max-w-lg">
-        <!-- Animated Lock Icon -->
+        <!-- Broken Lock Icon -->
         <div class="relative mx-auto mb-8 h-32 w-32">
-          <div class="absolute inset-0 animate-bounce rounded-full bg-primary/20"></div>
+          <div class="absolute inset-0 animate-pulse rounded-full bg-error/20"></div>
           <div class="relative flex h-full w-full items-center justify-center">
-            <Icon name="lucide:lock-keyhole" class="h-20 w-20 text-primary" />
+            <Icon name="lucide:shield-alert" class="h-20 w-20 text-error" />
           </div>
         </div>
         
         <h1 class="font-display text-6xl font-bold tracking-tight text-foreground sm:text-7xl">
-          4<span class="text-primary">0</span>4
+          5<span class="text-error">0</span>0
         </h1>
         
         <h2 class="mt-4 text-2xl font-semibold text-foreground sm:text-3xl">
-          Looks Like You're Locked Out!
+          Oops! Our Lock Jammed 🔧
         </h2>
         
         <p class="mt-4 text-lg text-muted-foreground">
-          Don't worry — we've been opening locked doors for over {siteConfig.trustSignals.yearsInBusiness} years... 
-          but even we can't find this page. 🔐
+          Well, this is embarrassing. We can open YOUR locks in minutes,
+          <br />but our server seems to have jammed itself.
         </p>
         
         <p class="mt-2 text-muted-foreground">
-          Maybe the page moved, or perhaps someone changed the locks without telling us.
+          Our tech team is on it — they're much better with code than deadbolts.
         </p>
         
         <div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a href="/">
             <Button client:load size="lg" className="gap-2">
-              <Icon name="lucide:home" class="h-5 w-5" />
-              Back to Safety
+              <Icon name="lucide:refresh-cw" class="h-5 w-5" />
+              Try Again
             </Button>
           </a>
           <a href={`tel:${siteConfig.contact.phone.href}`}>
             <Button client:load variant="outline" size="lg" className="gap-2">
               <Icon name="lucide:phone" class="h-5 w-5" />
-              Call for Rescue
+              Call Us Instead
             </Button>
           </a>
         </div>
         
-        <!-- Fun Stats -->
-        <div class="mt-12 rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm">
+        <!-- Reassurance Card -->
+        <div class="mt-12 rounded-2xl border border-error/30 bg-card/50 p-6 backdrop-blur-sm">
           <p class="text-sm font-medium text-muted-foreground">
-            Fun fact: Our locksmiths have unlocked <span class="font-bold text-primary">{siteConfig.trustSignals.jobsCompleted.toLocaleString()}+</span> doors...
-            <br />but this URL isn't one of them. 😅
+            🛠️ Our servers are like high-security safes — occasionally they need a tune-up.
+            <br />
+            <span class="text-error">Rest assured, your data is safe and sound.</span>
           </p>
         </div>
         
         <p class="mt-8 text-sm text-muted-foreground">
-          Actually need a locksmith? We're available 24/7 at{' '}
+          Need immediate help? We're still answering calls 24/7:{' '}
           <a href={`tel:${siteConfig.contact.phone.href}`} class="font-semibold text-primary underline hover:no-underline">
             {siteConfig.contact.phone.display}
           </a>

@@ -149,6 +149,7 @@ export const siteConfig = {
   // ============================================
   trustSignals: {
     yearsInBusiness: 15,
+    jobsCompleted: 50000,
     isLicensed: true,
     isInsured: true,
     isBonded: true,
