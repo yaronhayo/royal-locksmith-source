@@ -1,0 +1,76 @@
+---
+/**
+ * Static Section Component (Astro)
+ * 
+ * CSS-only version - no Framer Motion animations.
+ * Uses CSS animations instead for fade-in effect.
+ */
+
+interface Props {
+  container?: boolean | 'narrow' | 'wide';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  background?: 'default' | 'muted' | 'primary' | 'dark' | 'gradient' | 'subtle' | 'warm' | 'cool';
+  class?: string;
+  className?: string;
+  id?: string;
+  pattern?: boolean;
+}
+
+const { 
+  container = true, 
+  size = 'md', 
+  background = 'default', 
+  class: classAttr,
+  className,
+  id,
+  pattern = false 
+} = Astro.props;
+
+// Support both class and className props
+const finalClassName = classAttr || className;
+
+const sizes: Record<string, string> = {
+  sm: 'py-8 md:py-12 lg:py-16',
+  md: 'py-12 md:py-16 lg:py-20',
+  lg: 'py-16 md:py-24 lg:py-32',
+  xl: 'py-20 md:py-28 lg:py-36',
+};
+
+const backgrounds: Record<string, string> = {
+  default: 'bg-background',
+  muted: 'bg-gradient-to-b from-muted/30 via-muted/50 to-muted/30',
+  primary: 'bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground',
+  dark: 'bg-gradient-to-br from-secondary-800 via-secondary-900 to-secondary-950 text-secondary-50',
+  gradient: 'bg-gradient-to-br from-primary-50 via-background to-accent-50 dark:from-primary-950 dark:via-background dark:to-accent-950',
+  subtle: 'bg-gradient-to-b from-background via-muted/20 to-background',
+  warm: 'bg-gradient-to-br from-primary-50/50 via-background to-primary-50/30 dark:from-primary-950/30 dark:via-background dark:to-primary-950/20',
+  cool: 'bg-gradient-to-br from-secondary-50 via-background to-accent-50/30 dark:from-secondary-900 dark:via-background dark:to-accent-950/30',
+};
+
+const containers: Record<string, string> = {
+  true: 'container-custom',
+  narrow: 'container-narrow',
+  wide: 'container-wide',
+};
+
+const containerClass = container ? containers[container === true ? 'true' : container] : '';
+---
+
+<section
+  id={id}
+  class:list={['relative', sizes[size], backgrounds[background], finalClassName]}
+>
+  {pattern && (
+    <div 
+      class="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
+      style="background-image: radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0); background-size: 24px 24px;"
+    />
+  )}
+  {container ? (
+    <div class={containerClass}>
+      <slot />
+    </div>
+  ) : (
+    <slot />
+  )}
+</section>

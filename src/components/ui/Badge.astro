@@ -1,0 +1,46 @@
+---
+/**
+ * Static Badge Component (Astro)
+ * 
+ * No JavaScript required - pure CSS styling.
+ * Use this for badges that don't need interactivity.
+ */
+
+interface Props {
+  variant?: 'default' | 'primary' | 'secondary' | 'accent' | 'success' | 'warning' | 'error' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  class?: string;
+  className?: string;
+}
+
+const { variant = 'default', size = 'md', class: classAttr, className } = Astro.props;
+
+// Support both class and className props
+const finalClassName = classAttr || className;
+
+const variants: Record<string, string> = {
+  default: 'bg-secondary text-secondary-foreground',
+  primary: 'bg-primary/10 text-primary',
+  secondary: 'bg-secondary text-secondary-foreground',
+  accent: 'bg-accent/10 text-accent',
+  success: 'bg-success-50 text-success-600',
+  warning: 'bg-warning-50 text-warning-600',
+  error: 'bg-error-50 text-error-600',
+  outline: 'border border-border bg-transparent',
+};
+
+const sizes: Record<string, string> = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-3 py-1 text-xs',
+  lg: 'px-4 py-1.5 text-sm',
+};
+---
+
+<span class:list={[
+  'inline-flex items-center rounded-full font-medium',
+  variants[variant],
+  sizes[size],
+  finalClassName
+]}>
+  <slot />
+</span>

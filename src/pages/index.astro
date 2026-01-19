@@ -15,7 +15,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Header from '../components/common/Header.astro';
 import Footer from '../components/common/Footer.astro';
 import Schema from '../components/common/Schema.astro';
-import { Section, Badge, Card, CardContent, Accordion } from '../components/ui';
+import Section from '../components/ui/Section.astro';
+import Badge from '../components/ui/Badge.astro';
+import { Card, CardContent, Accordion } from '../components/ui';
 import { HeroBookingForm } from '../components/forms/HeroBookingForm';
 import { ScrollToTop } from '../components/common/ScrollToTop';
 import { PhoneCTA } from '../components/widgets/PhoneCTA';
@@ -112,7 +114,7 @@ const schemas = [
       <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <!-- Left: Content -->
         <div class="text-center lg:text-left">
-          <Badge client:load variant="primary" size="lg" className="mb-6">
+          <Badge variant="primary" size="lg" className="mb-6">
             <Icon name="lucide:zap" class="mr-2 h-4 w-4" />
             Fast Response • No Hidden Fees
           </Badge>
@@ -198,7 +200,7 @@ const schemas = [
   </section>
 
   <!-- Trust Bar -->
-  <Section client:load size="sm" background="default">
+  <Section size="sm" background="default">
     <div class="flex flex-wrap items-center justify-center gap-8 lg:gap-16">
       {
         [
@@ -225,9 +227,9 @@ const schemas = [
 
   <!-- Services Section -->
   <!-- Services Section -->
-  <Section client:load size="xl" background="warm" className="section-decorated">
+  <Section size="xl" background="warm" className="section-decorated">
     <div class="mx-auto max-w-3xl text-center">
-      <Badge client:load variant="secondary" className="mb-4">What We Fix</Badge>
+      <Badge variant="secondary" className="mb-4">What We Fix</Badge>
       <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
         Every Lock Problem, One Call Away
       </h2>
@@ -292,7 +294,7 @@ const schemas = [
   </Section>
 
   <!-- Why Choose Us -->
-  <Section client:load size="xl" background="subtle" className="section-border-top">
+  <Section size="xl" background="subtle" className="section-border-top">
     <div class="grid items-center gap-12 lg:grid-cols-2">
       <!-- Image/Visual -->
       <div class="relative">
@@ -327,7 +329,7 @@ const schemas = [
 
       <!-- Content -->
       <div>
-        <Badge client:load variant="secondary" className="mb-4">The Royal Difference</Badge>
+        <Badge variant="secondary" className="mb-4">The Royal Difference</Badge>
         <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
           Why Thousands Trust Us with Their Security
         </h2>
@@ -386,9 +388,9 @@ const schemas = [
   </Section>
 
   <!-- Service Areas -->
-  <Section client:load size="xl" background="cool" className="section-decorated">
+  <Section size="xl" background="cool" className="section-decorated">
     <div class="mx-auto max-w-3xl text-center">
-      <Badge client:load variant="secondary" className="mb-4">Service Areas</Badge>
+      <Badge variant="secondary" className="mb-4">Service Areas</Badge>
       <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
         Serving {siteConfig.serviceArea.region}
       </h2>
@@ -461,9 +463,9 @@ const schemas = [
   )}
 
   <!-- FAQ Section -->
-  <Section client:load size="xl" background="warm" className="section-border-top">
+  <Section size="xl" background="warm" className="section-border-top">
     <div class="mx-auto max-w-3xl text-center">
-      <Badge client:load variant="secondary" className="mb-4">FAQ</Badge>
+      <Badge variant="secondary" className="mb-4">FAQ</Badge>
       <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Frequently Asked Questions</h2>
       <p class="mt-4 text-lg text-muted-foreground">
         Find answers to common questions about our locksmith services.
@@ -486,7 +488,7 @@ const schemas = [
   </Section>
 
   <!-- Final CTA -->
-  <Section client:load size="xl" background="primary">
+  <Section size="xl" background="primary">
     <div class="mx-auto max-w-4xl text-center">
       <h2 class="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl lg:text-5xl">
         Need Help Right Now?
