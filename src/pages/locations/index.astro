@@ -9,13 +9,15 @@ import { Section, LocationCard, Badge } from '../../components/ui';
 import * as LucideIcons from 'lucide-react';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../../config/site.config';
-import { getLocalBusinessSchema } from '../../utils/schema';
+import { getBreadcrumbSchema } from '../../utils/schema';
 import { ServiceAreaMap } from '../../components/maps/ServiceAreaMap';
 
 const locations = await getCollection('locations', ({ data }) => !data.draft);
 const sortedLocations = locations.sort((a, b) => (a.data.order || 99) - (b.data.order || 99));
 
-const schemas = [getLocalBusinessSchema()];
+const schemas = [
+  getBreadcrumbSchema([{ label: 'Service Areas', href: '/locations/' }]),
+];
 
 const breadcrumbItems = [{ label: 'Service Areas', href: '/locations/' }];
 ---

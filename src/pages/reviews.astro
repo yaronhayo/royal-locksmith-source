@@ -18,7 +18,7 @@ import { Section, Badge, ReviewsGrid } from '../components/ui';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../config/site.config';
 import { getPageImage } from '../config/image-registry';
-import { getLocalBusinessSchema } from '../utils/schema';
+import { getBreadcrumbSchema } from '../utils/schema';
 
 // Get ALL testimonials from content collection
 const allTestimonials = await getCollection('testimonials');
@@ -96,7 +96,7 @@ const aggregateRatingSchema = {
 };
 
 const schemas = [
-  getLocalBusinessSchema(),
+  getBreadcrumbSchema([{ label: 'Reviews', href: '/reviews/' }]),
   JSON.stringify(aggregateRatingSchema),
   ...reviewSchemas.map((s) => JSON.stringify(s)),
 ];

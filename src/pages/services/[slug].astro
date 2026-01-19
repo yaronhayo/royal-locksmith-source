@@ -31,7 +31,7 @@ import { ReviewsCarousel } from '../../components/widgets/ReviewsCarousel';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../../config/site.config';
 import { getServiceImage } from '../../config/image-registry';
-import { getServiceSchema, getFAQSchema, getLocalBusinessSchema, getBreadcrumbSchema, getHowToSchema } from '../../utils/schema';
+import { getServiceSchema, getFAQSchema, getBreadcrumbSchema, getHowToSchema } from '../../utils/schema';
 
 export async function getStaticPaths() {
   const services = await getCollection('services', ({ data }) => !data.draft);
@@ -118,7 +118,6 @@ const processSteps = service.data.process || [
 
 // Generate schemas (after processSteps so HowTo can use them)
 const schemas = [
-  getLocalBusinessSchema(),
   getServiceSchema(service.data.title, service.data.description),
   getFAQSchema(serviceFAQ),
   getBreadcrumbSchema([

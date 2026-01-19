@@ -20,15 +20,13 @@ import { ServiceCalculator } from '../components/widgets/ServiceCalculator';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../config/site.config';
 import { getPageImage } from '../config/image-registry';
-import { getLocalBusinessSchema } from '../utils/schema';
+import { getBreadcrumbSchema } from '../utils/schema';
 
 const schemas = [
-  getLocalBusinessSchema(),
+  getBreadcrumbSchema([{ label: 'Book Service', href: '/book/' }]),
 ];
 
-const breadcrumbItems = [
-  { label: 'Book Service', href: '/book/' },
-];
+const breadcrumbItems = [{ label: 'Book Service', href: '/book/' }];
 
 const processSteps = [
   {

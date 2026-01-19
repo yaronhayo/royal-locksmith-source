@@ -8,9 +8,12 @@ import { Section, Button, Card, CardContent, Badge } from '../components/ui';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../config/site.config';
 import { getPageImage } from '../config/image-registry';
-import { getLocalBusinessSchema, getOrganizationSchema } from '../utils/schema';
+import { getOrganizationSchema, getBreadcrumbSchema } from '../utils/schema';
 
-const schemas = [getLocalBusinessSchema(), getOrganizationSchema()];
+const schemas = [
+  getOrganizationSchema(),
+  getBreadcrumbSchema([{ label: 'About', href: '/about/' }]),
+];
 
 const breadcrumbItems = [{ label: 'About', href: '/about/' }];
 ---

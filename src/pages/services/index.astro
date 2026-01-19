@@ -9,16 +9,16 @@ import { Section, Button, Card, CardContent, Badge } from '../../components/ui';
 import { Icon } from 'astro-icon/components';
 import { siteConfig } from '../../config/site.config';
 import { getServiceImage } from '../../config/image-registry';
-import { getLocalBusinessSchema } from '../../utils/schema';
+import { getBreadcrumbSchema } from '../../utils/schema';
 
 const services = await getCollection('services', ({ data }) => !data.draft);
 const sortedServices = services.sort((a, b) => (a.data.order || 99) - (b.data.order || 99));
 
-const schemas = [getLocalBusinessSchema()];
-
-const breadcrumbItems = [
-  { label: 'Services', href: '/services/' },
+const schemas = [
+  getBreadcrumbSchema([{ label: 'Services', href: '/services/' }]),
 ];
+
+const breadcrumbItems = [{ label: 'Services', href: '/services/' }];
 
 const serviceIcons: Record<string, string> = {
   home: 'lucide:home',
