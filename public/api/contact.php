@@ -327,24 +327,55 @@ function getCompanyEmailTemplate(array $data): string
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
     <meta name="color-scheme" content="light only">
     <meta name="supported-color-schemes" content="light only">
+    <title>New Lead - {$companyName}</title>
     <!--[if mso]>
     <noscript>
         <xml>
             <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
                 <o:PixelsPerInch>96</o:PixelsPerInch>
             </o:OfficeDocumentSettings>
         </xml>
     </noscript>
+    <style type="text/css">
+        table { border-collapse: collapse; }
+        td { font-family: Arial, sans-serif; }
+    </style>
     <![endif]-->
-    <style>
+    <style type="text/css">
+        /* Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-rspace: 0pt; mso-table-lspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        
+        /* Dark mode prevention */
         :root { color-scheme: light only; }
+        [data-ogsc] body, [data-ogsb] body { background-color: #f4f3f0 !important; }
+        
         @media (prefers-color-scheme: dark) {
-            .email-body, .email-container, body, table, td, th, div, p, span, a, h1, h2, h3, h4 {
+            body, .email-body, .email-container, table, td, p, span, a, h1, h2, h3, h4 {
                 background-color: #f4f3f0 !important;
                 color: #181611 !important;
             }
+            .email-container { background-color: #ffffff !important; }
+        }
+        
+        /* Responsive styles */
+        @media only screen and (max-width: 620px) {
+            .email-container { width: 100% !important; max-width: 100% !important; }
+            .email-body { padding: 15px 10px !important; }
+            .responsive-padding { padding: 20px 15px !important; }
+            .header-title { font-size: 22px !important; }
+            .action-button { display: block !important; width: 100% !important; margin: 8px 0 !important; padding: 14px 20px !important; text-align: center !important; }
+            .data-table td { display: block !important; width: 100% !important; padding: 8px 12px !important; }
+            .data-table tr { display: block !important; margin-bottom: 10px !important; border-bottom: 1px solid #e5e4e2 !important; }
+            .hide-mobile { display: none !important; }
+            .stack-mobile { display: block !important; width: 100% !important; }
+            .trust-badge { display: inline-block !important; width: 45% !important; margin: 5px !important; }
         }
     </style>
 </head>
@@ -535,24 +566,54 @@ function getAutoresponderTemplate(array $data): string
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
     <meta name="color-scheme" content="light only">
     <meta name="supported-color-schemes" content="light only">
+    <title>Thank You - {$companyName}</title>
     <!--[if mso]>
     <noscript>
         <xml>
             <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
                 <o:PixelsPerInch>96</o:PixelsPerInch>
             </o:OfficeDocumentSettings>
         </xml>
     </noscript>
+    <style type="text/css">
+        table { border-collapse: collapse; }
+        td { font-family: Arial, sans-serif; }
+    </style>
     <![endif]-->
-    <style>
+    <style type="text/css">
+        /* Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-rspace: 0pt; mso-table-lspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        
+        /* Dark mode prevention */
         :root { color-scheme: light only; }
+        [data-ogsc] body, [data-ogsb] body { background-color: #f4f3f0 !important; }
+        
         @media (prefers-color-scheme: dark) {
-            .email-body, .email-container, body, table, td, th, div, p, span, a, h1, h2, h3, h4 {
+            body, .email-body, .email-container, table, td, p, span, a, h1, h2, h3, h4 {
                 background-color: #f4f3f0 !important;
                 color: #181611 !important;
             }
+            .email-container { background-color: #ffffff !important; }
+        }
+        
+        /* Responsive styles */
+        @media only screen and (max-width: 620px) {
+            .email-container { width: 100% !important; max-width: 100% !important; }
+            .email-body { padding: 15px 10px !important; }
+            .responsive-padding { padding: 20px 15px !important; }
+            .header-title { font-size: 22px !important; }
+            .action-button { display: block !important; width: 100% !important; margin: 8px 0 !important; padding: 14px 20px !important; text-align: center !important; box-sizing: border-box !important; }
+            .content-section { padding: 25px 20px !important; }
+            .step-table td { font-size: 14px !important; }
+            .footer-section { padding: 20px 15px !important; }
+            .trust-badge { display: inline-block !important; width: 45% !important; margin: 8px 2% !important; vertical-align: top !important; }
         }
     </style>
 </head>
