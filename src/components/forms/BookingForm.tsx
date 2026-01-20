@@ -206,6 +206,16 @@ export function BookingForm({
 
       setIsSubmitted(true);
       
+      // Push form submission event to GTM dataLayer
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'form_submit_success',
+          form_type: 'booking_form',
+          service_type: formData.service || 'General Service',
+          form_location: window.location.pathname,
+        });
+      }
+      
       // Set flag and redirect to thank you page
       sessionStorage.setItem('form_submitted', 'true');
       window.location.href = '/thank-you/?type=booking';

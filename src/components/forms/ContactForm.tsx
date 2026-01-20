@@ -217,6 +217,16 @@ export function ContactForm({
         website: '',
       });
       
+      // Push form submission event to GTM dataLayer
+      if (typeof window !== 'undefined' && (window as any).dataLayer) {
+        (window as any).dataLayer.push({
+          event: 'form_submit_success',
+          form_type: 'contact_form',
+          service_type: formData.service || 'General Inquiry',
+          form_location: window.location.pathname,
+        });
+      }
+      
       if (onSuccess) {
         onSuccess();
       }
