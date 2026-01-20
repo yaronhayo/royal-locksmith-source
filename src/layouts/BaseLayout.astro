@@ -54,13 +54,22 @@ const robotsContent = getRobotsContent(noindex, nofollow);
     <link rel="dns-prefetch" href="https://www.google.com" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     
+    <!-- Initialize dataLayer before GTM for proper data flow -->
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
+      });
+    </script>
+    
     <!-- Google Tag Manager (only loads when GTM_ID is configured) -->
     {siteConfig.analytics.googleTagManagerId && (
     <script is:inline define:vars={{ gtmId: siteConfig.analytics.googleTagManagerId }}>
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      (function(w,d,s,l,i){
+        var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
       })(window,document,'script','dataLayer', gtmId);
     </script>
     )}
